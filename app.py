@@ -58,7 +58,7 @@ if uploaded_file:
     if city_filter:
         filtered = filtered[filtered[city_col].isin(city_filter)]
     if sector_filter:
-        filtered = filtered[sector_col].isin(sector_filter)]
+        filtered = filtered[filtered[sector_col].isin(sector_filter)]
 
     # KPIs
     total_funding = filtered[amount_col].sum()
