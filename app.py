@@ -3,137 +3,102 @@ import pandas as pd
 import plotly.express as px
 
 st.set_page_config(page_title="Startup Funding Dashboard", layout="wide")
-st.title("🚀 India's Startup Funding Dashboard")
 
-uploaded_file = st.file_uploader("Upload cleaned_startup_funding.csv", type="csv")
+# -----------------------
+# 1) Load CSV
+# -----------------------
+st.title("🚀 Startup Funding Dashboard")
+
+uploaded_file = st.file_uploader("Upload your startup CSV file", type="csv")
 
 if uploaded_file:
     df = pd.read_csv(uploaded_file)
 
     # CLEAN COLUMN NAMES
-    df.columns = (
-        df.columns
-        .str.strip()
-        .str.lower()
-        .str.replace(" ", "_")
-        .str.replace("", "_")
-    )
+    df.columns = df.columns.str.strip().str.lower().str.replace(" ", "").str.replace("-", "")
 
-    # Safe numeric conversion
-    df["amount_in_usd"] = pd.to_numeric(df["amount_in_usd"], errors="coerce")
+    # FIX BAD DATE COLUMN NAME
+    if "date_dd/mm/yyyy" in df.columns:
+        df.rename(columns={"date_dd/mm/yyyy": "date"}, inplace=True)
 
     # Convert date
-    df["date"] = pd.to_datetime(df["date_dd/mm/yyyy"], errors="coerce")
-    df["year"] = df["date"].dt.year
+    if "date" in df.columns:
+        df["date"] = pd.to_datetime(df["date"], errors="coerce")
 
-    # Replace NaN text fields
-    for col in df.columns:
-        if df[col].dtype == object:
-            df[col] = df[col].fillna("Unknown")
+    # Clean USD Column
+    if "amount_in_usd" in df.columns:
+        df["amount_in_usd"] = (
+            df["amount_in_usd"]
+            .astype(str)
+            .str.replace(",", "")
+            .str.replace("$", "")
+        )
+        df["amount_in_usd"] = pd.to_numeric(df["amount_in_usd"], errors="coerce")
 
-    # -----------------------------------------------------
-    # SIDEBAR FILTERS
-    # -----------------------------------------------------
+    # -----------------------
+    # 2) SIDEBAR FILTERS
+    # -----------------------
     st.sidebar.header("Filters")
 
-    year_filter = st.sidebar.multiselect(
-        "Select Year", 
-        sorted(df["year"].dropna().unique()), 
-        default=sorted(df["year"].dropna().unique())
-    )
+    # City filter
+    city_list = sorted(df["city__location"].dropna().unique())
+    city_filter = st.sidebar.multiselect("Select City", city_list)
 
-    sector_filter = st.sidebar.multiselect(
-        "Select Sector",
-        sorted(df["sector"].dropna().unique()),
-        default=sorted(df["sector"].dropna().unique())
-    )
+    # Sector filter
+    sector_list = sorted(df["sector"].dropna().unique())
+    sector_filter = st.sidebar.multiselect("Select Sector", sector_list)
 
-    city_filter = st.sidebar.multiselect(
-        "Select City",
-        sorted(df["city__location"].dropna().unique()),
-        default=sorted(df["city__location"].dropna().unique())
-    )
+    filtered_df = df.copy()
 
-    investor_filter = st.sidebar.multiselect(
-        "Select Investor",
-        sorted(df["investors_name"].dropna().unique()),
-        default=sorted(df["investors_name"].dropna().unique())
-    )
+    if city_filter:
+        filtered_df = filtered_df[filtered_df["city__location"].isin(city_filter)]
 
-    # Reset Button
-    if st.sidebar.button("Reset Filters"):
-        st.experimental_rerun()
+    if sector_filter:
+        filtered_df = filtered_df[filtered_df["sector"].isin(sector_filter)]
 
-    # -----------------------------------------------------
-    # FILTER DATA
-    # -----------------------------------------------------
-    filtered = df[
-        df["year"].isin(year_filter)
-        & df["sector"].isin(sector_filter)
-        & df["city__location"].isin(city_filter)
-        & df["investors_name"].isin(investor_filter)
-    ]
+    # -----------------------
+    # 3) METRICS
+    # -----------------------
+    st.subheader("📊 Key Metrics")
 
-    if filtered.empty:
-        st.error("❌ No data available for selected filters. Try resetting filters.")
-        st.stop()
+    col1, col2, col3 = st.columns(3)
+    col1.metric("Total Startups", len(filtered_df))
+    col2.metric("Total Funding (USD)", f"${filtered_df['amount_in_usd'].sum():,}")
+    col3.metric("Unique Sectors", filtered_df["sector"].nunique())
 
-    # -----------------------------------------------------
-    # KPIs
-    # -----------------------------------------------------
-    col1, col2, col3, col4 = st.columns(4)
+    # -----------------------
+    # 4) FUNDING CHART
+    # -----------------------
+    if "sector" in filtered_df.columns:
+        funding_by_sector = (
+            filtered_df.groupby("sector")["amount_in_usd"]
+            .sum()
+            .reset_index()
+            .sort_values("amount_in_usd", ascending=False)
+        )
 
-    col1.metric("💰 Total Funding", f"${filtered['amount_in_usd'].sum():,.0f}")
-    col2.metric("🚀 Total Startups", filtered["startup_name"].nunique())
-    col3.metric("📊 Avg Funding", f"${filtered['amount_in_usd'].mean():,.0f}")
-    col4.metric("🧑‍💼 Unique Investors", filtered["investors_name"].nunique())
+        fig1 = px.bar(
+            funding_by_sector,
+            x="sector",
+            y="amount_in_usd",
+            title="Funding by Sector",
+        )
+        st.plotly_chart(fig1, use_container_width=True)
 
-    # -----------------------------------------------------
-    # VISUALS
-    # -----------------------------------------------------
+    # -----------------------
+    # 5) STARTUPS TABLE
+    # -----------------------
+    st.subheader("📄 Startup Data")
+    st.dataframe(filtered_df)
 
-    st.subheader("📌 Funding by Sector")
-    fig1 = px.bar(
-        filtered.groupby("sector")["amount_in_usd"].sum().reset_index(),
-        x="sector",
-        y="amount_in_usd",
-        color="sector"
-    )
-    st.plotly_chart(fig1, use_container_width=True)
+    # -----------------------
+    # 6) INSIGHTS
+    # -----------------------
+    st.subheader("💡 Insights")
 
-    st.subheader("📌 Top 15 Funded Startups")
-    top_startups = (
-        filtered.groupby("startup_name")["amount_in_usd"]
-        .sum()
-        .sort_values(ascending=False)
-        .head(15)
-        .reset_index()
-    )
-    fig2 = px.bar(top_startups, x="startup_name", y="amount_in_usd", color="amount_in_usd")
-    st.plotly_chart(fig2, use_container_width=True)
-
-    st.subheader("📌 Funding Trend Over Years")
-    yearly = filtered.groupby("year")["amount_in_usd"].sum().reset_index()
-    fig3 = px.line(yearly, x="year", y="amount_in_usd", markers=True)
-    st.plotly_chart(fig3, use_container_width=True)
-
-    st.subheader("📌 City-wise Startup Count")
-    city_counts = filtered["city__location"].value_counts().head(15).reset_index()
-    city_counts.columns = ["city", "count"]
-    fig4 = px.bar(city_counts, x="city", y="count", color="count")
-    st.plotly_chart(fig4, use_container_width=True)
-
-    st.subheader("📌 Investment Type Breakdown")
-    fig5 = px.pie(filtered, names="investmentntype", hole=0.45)
-    st.plotly_chart(fig5, use_container_width=True)
-
-    st.subheader("📌 Sector → Startup Funding Treemap")
-    fig6 = px.treemap(
-        filtered,
-        path=["sector", "startup_name"],
-        values="amount_in_usd"
-    )
-    st.plotly_chart(fig6, use_container_width=True)
+    if not funding_by_sector.empty:
+        top_sector = funding_by_sector.iloc[0]["sector"]
+        st.write(f"✔ *Highest funded sector:* {top_sector}")
 
 else:
-    st.info("⬆ Upload your CSV file to get started.")
+    st.info("👆 Upload your CSV file to continue.")
