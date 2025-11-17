@@ -1,0 +1,11 @@
+sr_no,date,startup_name,industry_vertical,subvertical,city_location,investors_name,investment_type,amount_in_usd,remarks,incubation_center,name_of_the_startup_x,location_of_company,sector,company_profile,name_of_the_startup_y,is_meity_recognized
+1,2023-01-15,TechNova,Technology,AI,Mumbai,Accel,Seed,500000,,T-Hub,TechNova,Mumbai,Artificial Intelligence,AI solutions provider,TechNova,Yes
+2,2023-02-10,GreenGen,Energy,CleanTech,Bangalore,Sequoia,Series A,1200000,,NSRCEL,GreenGen,Bangalore,Clean Energy,Solar innovations,GreenGen,No
+3,2023-03-05,FoodEase,FoodTech,Delivery,Delhi,Matrix Partners,Seed,300000,,IIT Incubation,FoodEase,Delhi,Food Technology,Food delivery app,FoodEase,No
+4,2023-04-01,HealthBridge,HealthTech,Diagnostics,Chennai,Titan Capital,Angel,200000,,IIM Incubator,HealthBridge,Chennai,Healthcare,Diagnostics platform,HealthBridge,Yes
+5,2023-05-20,AutoBot,Robotics,Automation,Pune,Blume Ventures,Series B,2500000,,MIT Incubator,AutoBot,Pune,Robotics,Industrial robots,AutoBot,Yes
+6,2023-06-11,AgriPro,Agritech,Farming,Hyderabad,Omnivore,Seed,450000,,T-Hub,AgriPro,Hyderabad,Agriculture,Farm analytics,AgriPro,No
+7,2023-07-30,FinEdge,FinTech,Payments,Mumbai,Tiger Global,Series A,1500000,,CIE-IIITH,FinEdge,Mumbai,FinTech,Payments platform,FinEdge,Yes
+8,2023-08-22,EdSpark,EdTech,E-learning,Bangalore,Byju’s,Angel,180000,,NSRCEL,EdSpark,Bangalore,Education,E-learning platform,EdSpark,No
+9,2023-09-09,StyleBee,Fashion,Retail,Delhi,Venture Highway,Seed,220000,,IIT Incubation,StyleBee,Delhi,Fashion,Retail clothing,StyleBee,No
+10,2023-10-18,SafeHome,HomeTech,Security,Chennai,SAIF Partners,Series A,900000,,IIM Incubator,SafeHome,Chennai,Security,Home security systems,SafeHome,Yes
