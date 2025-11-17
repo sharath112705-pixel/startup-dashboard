@@ -1,11 +1,201 @@
-sr_no,date,startup_name,industry_vertical,subvertical,city_location,investors_name,investment_type,amount_in_usd,remarks,incubation_center,name_of_the_startup_x,location_of_company,sector,company_profile,name_of_the_startup_y,is_meity_recognized
-1,2023-01-15,TechNova,Technology,AI,Mumbai,Accel,Seed,500000,,T-Hub,TechNova,Mumbai,Artificial Intelligence,AI solutions provider,TechNova,Yes
-2,2023-02-10,GreenGen,Energy,CleanTech,Bangalore,Sequoia,Series A,1200000,,NSRCEL,GreenGen,Bangalore,Clean Energy,Solar innovations,GreenGen,No
-3,2023-03-05,FoodEase,FoodTech,Delivery,Delhi,Matrix Partners,Seed,300000,,IIT Incubation,FoodEase,Delhi,Food Technology,Food delivery app,FoodEase,No
-4,2023-04-01,HealthBridge,HealthTech,Diagnostics,Chennai,Titan Capital,Angel,200000,,IIM Incubator,HealthBridge,Chennai,Healthcare,Diagnostics platform,HealthBridge,Yes
-5,2023-05-20,AutoBot,Robotics,Automation,Pune,Blume Ventures,Series B,2500000,,MIT Incubator,AutoBot,Pune,Robotics,Industrial robots,AutoBot,Yes
-6,2023-06-11,AgriPro,Agritech,Farming,Hyderabad,Omnivore,Seed,450000,,T-Hub,AgriPro,Hyderabad,Agriculture,Farm analytics,AgriPro,No
-7,2023-07-30,FinEdge,FinTech,Payments,Mumbai,Tiger Global,Series A,1500000,,CIE-IIITH,FinEdge,Mumbai,FinTech,Payments platform,FinEdge,Yes
-8,2023-08-22,EdSpark,EdTech,E-learning,Bangalore,Byju’s,Angel,180000,,NSRCEL,EdSpark,Bangalore,Education,E-learning platform,EdSpark,No
-9,2023-09-09,StyleBee,Fashion,Retail,Delhi,Venture Highway,Seed,220000,,IIT Incubation,StyleBee,Delhi,Fashion,Retail clothing,StyleBee,No
-10,2023-10-18,SafeHome,HomeTech,Security,Chennai,SAIF Partners,Series A,900000,,IIM Incubator,SafeHome,Chennai,Security,Home security systems,SafeHome,Yes
+sr_no,date,startup_name,industry_vertical,subvertical,city_location,investors_name,investment_type,amount_in_usd,incubation_center,sector,company_profile,is_meity_recognized
+1,2023-01-10,TechNova,Technology,AI,Mumbai,Accel,Seed,500000,T-Hub,Artificial Intelligence,AI solutions provider,Yes
+2,2023-01-15,GreenGen,Energy,CleanTech,Bangalore,Sequoia,Series A,1200000,NSRCEL,Clean Energy,Solar innovation startup,No
+3,2023-01-20,FoodEase,FoodTech,Delivery,Delhi,Matrix Partners,Seed,300000,IIT Incubation,Food Technology,Food delivery platform,No
+4,2023-01-22,HealthBridge,HealthTech,Diagnostics,Chennai,Titan Capital,Angel,200000,IIM Incubator,Healthcare,Diagnostics platform,Yes
+5,2023-01-25,AutoBot,Robotics,Automation,Pune,Blume Ventures,Series B,2500000,MIT Incubator,Robotics,Industrial robots,Yes
+6,2023-01-28,AgriPro,Agritech,Farming,Hyderabad,Omnivore,Seed,450000,T-Hub,Agriculture,Farm analytics platform,No
+7,2023-02-01,FinEdge,FinTech,Payments,Mumbai,Tiger Global,Series A,1500000,CIE-IIITH,FinTech,Payments infrastructure,Yes
+8,2023-02-05,EdSpark,EdTech,E-learning,Bangalore,Byju’s,Angel,180000,NSRCEL,Education,E-learning solutions,No
+9,2023-02-08,StyleBee,Fashion,Retail,Delhi,Venture Highway,Seed,220000,IIT Incubation,Fashion,Retail clothing brand,No
+10,2023-02-12,SafeHome,HomeTech,Security,Chennai,SAIF Partners,Series A,900000,IIM Incubator,Security,Home security systems,Yes
+11,2023-02-14,AgroSense,Agritech,IoT,Pune,Omnivore,Angel,160000,MIT Incubator,Agriculture,Smart IoT sensors for farms,No
+12,2023-02-18,CardiAI,HealthTech,AI Diagnostics,Mumbai,Chiratae Ventures,Seed,550000,T-Hub,Healthcare,AI cardiac diagnostics,Yes
+13,2023-02-22,UrbanMove,Transport,Mobility,Bangalore,Ola Mobility Fund,Seed,300000,NSRCEL,Transport,Urban mobility app,No
+14,2023-02-25,BuildWise,Construction,Tech,Delhi,Lightrock,Pre-Series A,700000,IIT Incubation,Construction,Construction workflow tech,No
+15,2023-02-28,BlueHarvest,Agritech,Aquaculture,Chennai,Aavishkaar Capital,Series A,1300000,IIM Incubator,Agriculture,Aquaculture analytics,Yes
+16,2023-03-02,FinGuard,FinTech,Cybersecurity,Mumbai,Matrix Partners,Seed,450000,CIE-IIITH,FinTech,Financial fraud detection,No
+17,2023-03-06,SkillMine,EdTech,Skill Development,Bangalore,Blume Ventures,Angel,140000,NSRCEL,Education,Skill training platform,No
+18,2023-03-10,InstaDoc,HealthTech,Telemedicine,Hyderabad,Accel,Series A,1100000,T-Hub,Healthcare,Online doctor consultations,Yes
+19,2023-03-12,HomeWise,PropTech,Rental,Delhi,Greycroft,Pre-Series A,600000,IIT Incubation,Real Estate,Rental property platform,No
+20,2023-03-16,MetalMind,Manufacturing,Automation,Pune,Sequoia,Series B,2800000,MIT Incubator,Manufacturing,AI-driven manufacturing,Yes
+21,2023-03-20,SmartGrid,Energy,IoT,Chennai,Tata Capital,Seed,390000,IIM Incubator,Energy,Smart grid automation,No
+22,2023-03-22,PaySwift,FinTech,UPI,Mumbai,RTP Global,Series A,900000,CIE-IIITH,FinTech,UPI payment solutions,Yes
+23,2023-03-25,TrendKart,E-commerce,Fashion,Bangalore,Venture Highway,Seed,210000,NSRCEL,E-commerce,Fashion marketplace,No
+24,2023-03-27,NanoHeal,HealthTech,Nanotech,Hyderabad,3one4 Capital,Seed,470000,T-Hub,Healthcare,Nanotech medical devices,Yes
+25,2023-03-30,AquaPure,WaterTech,Treatment,Delhi,Indian Angel Network,Angel,180000,IIT Incubation,Water Technology,Water purification systems,No
+26,2023-04-02,SkyLift,Transport,Drones,Pune,Info Edge Ventures,Series A,1250000,MIT Incubator,Transport,Delivery drones,Yes
+27,2023-04-05,FreshBox,FoodTech,Supplies,Chennai,Matrix Partners,Seed,260000,IIM Incubator,Food Technology,Farm-to-store supplies,No
+28,2023-04-07,CredMint,FinTech,Lending,Mumbai,SIDBI Fund,Pre-Series A,620000,CIE-IIITH,FinTech,Digital lending platform,No
+29,2023-04-10,RoboAid,HealthTech,Rehab,Bangalore,Accel,Angel,150000,NSRCEL,Healthcare,Robotic rehab devices,Yes
+30,2023-04-12,UrbanNest,PropTech,Home Services,Delhi,Lightrock,Seed,240000,IIT Incubation,Real Estate,Home service booking app,No
+31,2023-04-15,TechHive,IT Services,SaaS,Hyderabad,Tiger Global,Series A,980000,T-Hub,Technology,SaaS workflow tools,Yes
+32,2023-04-17,VoltGo,Energy,Battery,Pune,Sequoia,Series A,1500000,MIT Incubator,Energy,Lithium battery systems,Yes
+33,2023-04-20,AgroChain,Agritech,SaaS,Bangalore,Omnivore,Seed,320000,NSRCEL,Agriculture,Farm management SaaS,No
+34,2023-04-22,LearnEasy,EdTech,K12,Mumbai,Byju’s,Angel,160000,CIE-IIITH,Education,K12 digital learning,No
+35,2023-04-25,MedVault,HealthTech,Records,Chennai,SAIF Partners,Pre-Series A,650000,IIM Incubator,Healthcare,Digital health records,Yes
+36,2023-04-28,RoboFleet,Logistics,Robotics,Delhi,Chiratae Ventures,Series A,1400000,IIT Incubation,Logistics,Warehouse robots,Yes
+37,2023-05-01,FreshCart,E-commerce,Grocery,Bangalore,Flipkart Ventures,Seed,230000,NSRCEL,E-commerce,Online grocery delivery,No
+38,2023-05-04,PayWave,FinTech,Cards,Mumbai,Matrix Partners,Seed,410000,CIE-IIITH,FinTech,Card payment tech,No
+39,2023-05-06,EduBridge,EdTech,Training,Hyderabad,Accel,Angel,150000,T-Hub,Education,Professional training,No
+40,2023-05-09,SolarPeak,Energy,Solar,Chennai,Aavishkaar Capital,Series A,1250000,IIM Incubator,Energy,Solar panel tech,Yes
+41,2023-05-12,BuildBot,Robotics,Construction,Pune,Blume Ventures,Series B,2700000,MIT Incubator,Robotics,Construction robots,Yes
+42,2023-05-15,MilkChain,FoodTech,Dairy,Bangalore,Venture Highway,Seed,200000,NSRCEL,Food Technology,Dairy supply chain,No
+43,2023-05-17,HeartBeat,HealthTech,Wearables,Mumbai,Gaja Capital,Pre-Series A,580000,CIE-IIITH,Healthcare,Heart monitoring wearable,Yes
+44,2023-05-20,CityRide,Transport,Mobility,Delhi,Ola Mobility Fund,Seed,290000,IIT Incubation,Transport,Urban bike taxis,No
+45,2023-05-23,SkillForge,EdTech,Upskilling,Hyderabad,Blume Ventures,Angel,170000,T-Hub,Education,Upskilling platform,No
+46,2023-05-26,DataCore,Technology,Cloud,Pune,Sequoia,Series A,1350000,MIT Incubator,Technology,Cloud security platform,Yes
+47,2023-05-28,MedServe,HealthTech,Pharmacy,Chennai,Titan Capital,Seed,260000,IIM Incubator,Healthcare,Online pharmacy,No
+48,2023-05-31,AgroDrive,Agritech,Transport,Bangalore,Omnivore,Seed,330000,NSRCEL,Agriculture,Farm-to-market logistics,No
+49,2023-06-02,ShopRocket,E-commerce,Marketplace,Mumbai,RTP Global,Series A,900000,CIE-IIITH,E-commerce,Online marketplace,Yes
+50,2023-06-05,NanoCare,HealthTech,NanoDiagnostics,Delhi,3one4 Capital,Seed,470000,IIT Incubation,Healthcare,Nanotech diagnostics,Yes
+51,2023-06-08,AquaSense,WaterTech,Monitoring,Bangalore,Indian Angel Network,Angel,190000,NSRCEL,Water Technology,Water quality monitoring sensors,No
+52,2023-06-10,DroneX,Transport,Drones,Mumbai,Info Edge Ventures,Series A,1250000,CIE-IIITH,Transport,Commercial drone solutions,Yes
+53,2023-06-12,SkillPro,EdTech,Skill Development,Hyderabad,Accel,Seed,230000,T-Hub,Education,Job-oriented training platform,No
+54,2023-06-15,FinPort,FinTech,WealthTech,Delhi,Matrix Partners,Pre-Series A,630000,IIT Incubation,FinTech,Online wealth management,Yes
+55,2023-06-18,SafeTrack,Security,Surveillance,Chennai,SAIF Partners,Seed,260000,IIM Incubator,Security,Smart surveillance systems,No
+56,2023-06-20,GreenFuel,Energy,Biofuel,Pune,Aavishkaar Capital,Series A,1450000,MIT Incubator,Energy,Biofuel production startup,Yes
+57,2023-06-23,FreshMart,E-commerce,Grocery,Bangalore,Venture Highway,Seed,210000,NSRCEL,E-commerce,Local grocery marketplace,No
+58,2023-06-25,HeartAI,HealthTech,Diagnostics,Mumbai,Chiratae Ventures,Seed,520000,CIE-IIITH,Healthcare,AI cardiology analysis,Yes
+59,2023-06-28,UrbanChef,FoodTech,Cloud Kitchen,Delhi,Lightrock,Angel,180000,IIT Incubation,Food Technology,Cloud kitchen network,No
+60,2023-07-01,DataFlow,Technology,Big Data,Hyderabad,Sequoia,Series A,1400000,T-Hub,Technology,Big data analytics suite,Yes
+61,2023-07-03,SolarLink,Energy,Solar Panels,Chennai,Tata Capital,Seed,320000,IIM Incubator,Energy,Solar panel installation services,No
+62,2023-07-06,RoboHand,Robotics,Medical,Pune,Titan Capital,Series A,900000,MIT Incubator,Robotics,Robotic prosthetic hands,Yes
+63,2023-07-09,MedReach,HealthTech,Telemedicine,Bangalore,Accel,Seed,260000,NSRCEL,Healthcare,Digital doctor platform,No
+64,2023-07-11,PayLink,FinTech,Payments,Mumbai,RTP Global,Series A,880000,CIE-IIITH,FinTech,Merchant payment gateway,Yes
+65,2023-07-14,TeachSmart,EdTech,K12,Delhi,Byju’s,Angel,170000,IIT Incubation,Education,K12 learning app,No
+66,2023-07-17,AgroLabs,Agritech,Soil Testing,Hyderabad,Omnivore,Seed,310000,T-Hub,Agriculture,Soil analysis platform,No
+67,2023-07-19,BuildFlow,Construction,Tech,Chennai,Chiratae Ventures,Pre-Series A,670000,IIM Incubator,Construction,Construction workflow automation,Yes
+68,2023-07-22,SkyRoute,Transport,Logistics,Pune,Blume Ventures,Series A,1000000,MIT Incubator,Transport,AI logistics optimization,Yes
+69,2023-07-25,VisionAI,Technology,Computer Vision,Bangalore,Sequoia,Seed,450000,NSRCEL,Technology,Computer vision APIs,No
+70,2023-07-27,WaterSure,WaterTech,Filtration,Mumbai,Indian Angel Network,Angel,200000,CIE-IIITH,Water Technology,Smart water filtration systems,No
+71,2023-07-30,HealthSync,HealthTech,Records,Chennai,Tata Capital,Series A,950000,IIM Incubator,Healthcare,Health record automation,Yes
+72,2023-08-02,GrowKart,E-commerce,Agriculture,Delhi,Venture Highway,Seed,210000,IIT Incubation,E-commerce,Agriculture marketplace,No
+73,2023-08-04,SolarCore,Energy,Storage,Pune,Aavishkaar Capital,Series A,1400000,MIT Incubator,Energy,Solar energy storage systems,Yes
+74,2023-08-07,FreshServe,FoodTech,Supply Chain,Bangalore,Matrix Partners,Seed,260000,NSRCEL,Food Technology,Restaurant supply chain,No
+75,2023-08-10,PayMate,FinTech,Lending,Mumbai,SIDBI Fund,Pre-Series A,620000,CIE-IIITH,FinTech,Small business lending platform,No
+76,2023-08-12,SkillBoost,EdTech,Professional,Bangalore,Blume Ventures,Angel,150000,NSRCEL,Education,Professional upskilling platform,No
+77,2023-08-15,RoboSense,Robotics,Sensors,Pune,Titan Capital,Series B,2550000,MIT Incubator,Robotics,Industrial sensing robots,Yes
+78,2023-08-18,AeroCart,Transport,Drone Delivery,Hyderabad,Accel,Seed,300000,T-Hub,Transport,Drone-based parcel delivery,Yes
+79,2023-08-20,SmartFarm,Agritech,IoT,Chennai,Omnivore,Seed,380000,IIM Incubator,Agriculture,IoT farm sensors,No
+80,2023-08-23,NeoTech,Technology,SaaS,Mumbai,Sequoia,Series A,1300000,CIE-IIITH,Technology,Business SaaS tools,Yes
+81,2023-08-26,FashNova,E-commerce,Fashion,Delhi,Venture Highway,Seed,210000,IIT Incubation,E-commerce,Fashion lifestyle store,No
+82,2023-08-29,LifePulse,HealthTech,Wearables,Bangalore,Gaja Capital,Series A,880000,NSRCEL,Healthcare,Health monitoring wearable,Yes
+83,2023-08-31,FoodLab,FoodTech,Packaging,Hyderabad,Indian Angel Network,Angel,170000,T-Hub,Food Technology,Smart food packaging,No
+84,2023-09-03,UrbanGrid,Energy,Microgrid,Chennai,Tata Capital,Pre-Series A,670000,IIM Incubator,Energy,Microgrid management,Yes
+85,2023-09-05,AutoFleet,Transport,EV,Pune,Blume Ventures,Series A,1200000,MIT Incubator,Transport,Electric fleet management,Yes
+86,2023-09-08,TeachMore,EdTech,Coaching,Mumbai,Byju’s,Angel,150000,CIE-IIITH,Education,Exam prep coaching app,No
+87,2023-09-11,AgriCart,Agritech,B2B,Bangalore,Omnivore,Seed,320000,NSRCEL,Agriculture,Agriculture B2B supplies,No
+88,2023-09-14,CarePath,HealthTech,AI Diagnostics,Delhi,Chiratae Ventures,Seed,500000,IIT Incubation,Healthcare,AI-based medical diagnosis,Yes
+89,2023-09-16,CloudNet,Technology,Cloud,Pune,Sequoia,Series A,1300000,MIT Incubator,Technology,Cloud security solutions,Yes
+90,2023-09-19,HomeAssist,PropTech,Services,Hyderabad,Lightrock,Seed,230000,T-Hub,Real Estate,Home repair services,No
+91,2023-09-21,SeaFresh,FoodTech,Seafood,Chennai,Aavishkaar Capital,Series A,1450000,IIM Incubator,Food Technology,Fresh seafood delivery,Yes
+92,2023-09-24,RoboCare,HealthTech,Robotics,Mumbai,Titan Capital,Pre-Series A,700000,CIE-IIITH,Healthcare,Robotic patient care,Yes
+93,2023-09-27,SkillZone,EdTech,Upskilling,Bangalore,Blume Ventures,Seed,230000,NSRCEL,Education,Online upskilling academy,No
+94,2023-09-29,GreenGrid,Energy,Storage,Delhi,Tata Capital,Seed,310000,IIT Incubation,Energy,Energy storage technology,No
+95,2023-10-02,AeroLink,Transport,Aviation,Pune,Info Edge Ventures,Series A,1150000,MIT Incubator,Transport,Small aviation tech,Yes
+96,2023-10-05,FoodSprint,FoodTech,Delivery,Bangalore,Matrix Partners,Seed,280000,NSRCEL,Food Technology,Fast food delivery,No
+97,2023-10-07,PayTrust,FinTech,Security,Mumbai,RTP Global,Series A,940000,CIE-IIITH,FinTech,Secure payments solution,Yes
+98,2023-10-10,HealthMate,HealthTech,Records,Chennai,IIM Incubator,Pre-Series A,640000,IIM Incubator,Healthcare,Digital patient records,Yes
+99,2023-10-12,AgriFlow,Agritech,SaaS,Hyderabad,Omnivore,Seed,310000,T-Hub,Agriculture,Farm operations SaaS,No
+100,2023-10-15,SmartHome,HomeTech,Automation,Delhi,Indian Angel Network,Angel,200000,IIT Incubation,Home Technology,Home automation systems,No
+101,2023-10-17,RoboLine,Robotics,Automation,Mumbai,Titan Capital,Seed,280000,CIE-IIITH,Robotics,Automated assembly robots,No
+102,2023-10-20,UrbanEats,FoodTech,Cloud Kitchen,Bangalore,Accel,Angel,160000,NSRCEL,Food Technology,Healthy cloud kitchen meals,No
+103,2023-10-22,SolarEdge,Energy,Solar Panels,Hyderabad,Sequoia,Series A,1350000,T-Hub,Energy,Solar panel optimization tech,Yes
+104,2023-10-25,FinServe,FinTech,Lending,Delhi,Matrix Partners,Seed,240000,IIT Incubation,FinTech,Lending platform for MSMEs,No
+105,2023-10-28,SkillMentor,EdTech,Professional,Chennai,Blume Ventures,Angel,150000,IIM Incubator,Education,Professional mentorship platform,No
+106,2023-10-30,AutoSense,Automotive,EV,Pune,Tata Capital,Pre-Series A,650000,MIT Incubator,Automotive,EV sensor systems,Yes
+107,2023-11-02,AquaPure,WaterTech,Filtration,Mumbai,Indian Angel Network,Angel,180000,CIE-IIITH,Water Technology,Smart water purifiers,No
+108,2023-11-04,HealthAI,HealthTech,Diagnostics,Bangalore,Chiratae Ventures,Seed,520000,NSRCEL,Healthcare,AI diagnostics engine,Yes
+109,2023-11-07,FreshBasket,E-commerce,Grocery,Delhi,Venture Highway,Seed,210000,IIT Incubation,E-commerce,Online grocery service,No
+110,2023-11-10,CryptoSafe,FinTech,Security,Hyderabad,RTP Global,Series A,940000,T-Hub,FinTech,Secure crypto wallets,Yes
+111,2023-11-12,BuildMax,Construction,Tech,Chennai,Aavishkaar Capital,Seed,310000,IIM Incubator,Construction,Construction workflow tools,No
+112,2023-11-15,CloudAI,Technology,Cloud,Mumbai,Sequoia,Series A,1300000,CIE-IIITH,Technology,Cloud AI services,Yes
+113,2023-11-18,AgriPulse,Agritech,IoT,Pune,Omnivore,Seed,300000,MIT Incubator,Agriculture,IoT-based crop monitoring,No
+114,2023-11-20,TeachPro,EdTech,Coaching,Bangalore,Byju’s,Angel,160000,NSRCEL,Education,Coaching app for students,No
+115,2023-11-22,RoboTrack,Robotics,Surveillance,Hyderabad,Titan Capital,Series A,900000,T-Hub,Robotics,Security surveillance robots,Yes
+116,2023-11-25,StyleCart,E-commerce,Fashion,Delhi,Lightrock,Seed,220000,IIT Incubation,E-commerce,Fashion retail store,No
+117,2023-11-27,HeartSync,HealthTech,Wearables,Chennai,Gaja Capital,Series A,880000,IIM Incubator,Healthcare,Heart monitoring wearable,Yes
+118,2023-11-30,GreenBox,Energy,Storage,Mumbai,Tata Capital,Pre-Series A,670000,CIE-IIITH,Energy,Energy storage batteries,No
+119,2023-12-02,AeroGo,Transport,Drone Delivery,Pune,Info Edge Ventures,Series A,1200000,MIT Incubator,Transport,Drone delivery solutions,Yes
+120,2023-12-05,PaySure,FinTech,Payments,Bangalore,Accel,Seed,230000,NSRCEL,FinTech,Secure digital payments,No
+121,2023-12-07,MedTrack,HealthTech,Records,Delhi,Matrix Partners,Series A,950000,IIT Incubation,Healthcare,Health record management,Yes
+122,2023-12-10,AgriHive,Agritech,B2B,Hyderabad,Omnivore,Seed,330000,T-Hub,Agriculture,B2B agriculture supplies,No
+123,2023-12-12,FoodCraft,FoodTech,Supply Chain,Chennai,Blume Ventures,Seed,260000,IIM Incubator,Food Technology,Restaurant supply chain,No
+124,2023-12-15,SmartGrid,Energy,Microgrid,Mumbai,Aavishkaar Capital,Series A,1450000,CIE-IIITH,Energy,Microgrid power systems,Yes
+125,2023-12-18,HomeFix,PropTech,Services,Bangalore,Lightrock,Seed,240000,NSRCEL,Real Estate,Home repair marketplace,No
+126,2023-12-20,CareBot,HealthTech,Robotics,Pune,Titan Capital,Pre-Series A,700000,MIT Incubator,Healthcare,Medical care robots,Yes
+127,2023-12-23,Learnify,EdTech,K12,Delhi,Byju’s,Angel,170000,IIT Incubation,Education,K12 learning platform,No
+128,2023-12-26,SolarWave,Energy,Solar Panels,Hyderabad,Sequoia,Series A,1300000,T-Hub,Energy,Solar panel manufacturing,Yes
+129,2023-12-28,RoboPack,Robotics,Industrial,Chennai,Chiratae Ventures,Seed,480000,IIM Incubator,Robotics,Industrial packaging robots,No
+130,2023-12-31,QuickCart,E-commerce,Grocery,Mumbai,Venture Highway,Seed,220000,CIE-IIITH,E-commerce,Grocery delivery startup,No
+131,2024-01-02,DataCore,Technology,Big Data,Bangalore,Accel,Series A,1400000,NSRCEL,Technology,Big data analysis platform,Yes
+132,2024-01-05,Freshly,FoodTech,Cloud Kitchen,Hyderabad,Indian Angel Network,Angel,200000,T-Hub,Food Technology,Cloud kitchen network,No
+133,2024-01-07,HealthNet,HealthTech,Telemedicine,Delhi,SAIF Partners,Seed,260000,IIT Incubation,Healthcare,Telemedicine consultation,No
+134,2024-01-10,PayEdge,FinTech,Payments,Mumbai,RTP Global,Series A,900000,CIE-IIITH,FinTech,Merchant payments platform,Yes
+135,2024-01-12,TeachHub,EdTech,Skill Development,Chennai,Byju’s,Angel,150000,IIM Incubator,Education,Skill development academy,No
+136,2024-01-15,AgriSense,Agritech,Soil Testing,Pune,Omnivore,Seed,310000,MIT Incubator,Agriculture,Soil testing device,No
+137,2024-01-18,SkyMove,Transport,Logistics,Bangalore,Blume Ventures,Series A,1000000,NSRCEL,Transport,Logistics automation tools,Yes
+138,2024-01-20,UrbanTech,Technology,SaaS,Hyderabad,Sequoia,Seed,420000,T-Hub,Technology,SaaS tools for businesses,No
+139,2024-01-23,SeaFoods,FoodTech,Seafood,Chennai,Aavishkaar Capital,Series A,1450000,IIM Incubator,Food Technology,Fresh seafood delivery,Yes
+140,2024-01-25,RoboAI,Robotics,AI Robots,Mumbai,Titan Capital,Series B,2600000,CIE-IIITH,Robotics,Industrial AI robots,Yes
+141,2024-01-28,AgriLink,Agritech,SaaS,Delhi,Omnivore,Seed,320000,IIT Incubation,Agriculture,Farm management SaaS,No
+142,2024-01-30,LifeGuard,HealthTech,Diagnostics,Bangalore,Gaja Capital,Seed,520000,NSRCEL,Healthcare,Emergency diagnostic tools,Yes
+143,2024-02-02,BuildX,Construction,Tech,Pune,Lightrock,Pre-Series A,680000,MIT Incubator,Construction,Construction AI platform,Yes
+144,2024-02-05,FreshCo,E-commerce,Fruit Delivery,Hyderabad,Venture Highway,Seed,210000,T-Hub,E-commerce,Fruit delivery startup,No
+145,2024-02-07,SolarHive,Energy,Storage,Chennai,Tata Capital,Series A,1400000,IIM Incubator,Energy,Energy storage innovation,Yes
+146,2024-02-10,SkillForge,EdTech,Upskilling,Bangalore,Blume Ventures,Seed,230000,NSRCEL,Education,Online upskilling platform,No
+147,2024-02-12,FoodDash,FoodTech,Delivery,Mumbai,Matrix Partners,Seed,270000,CIE-IIITH,Food Technology,Quick food delivery service,No
+148,2024-02-15,PayLogic,FinTech,Security,Delhi,RTP Global,Series A,920000,IIT Incubation,FinTech,Payment security platform,Yes
+149,2024-02-17,AgriWave,Agritech,Farming,Chennai,Omnivore,Seed,350000,IIM Incubator,Agriculture,Farm automation tools,No
+150,2024-02-20,HomeSecure,HomeTech,Security,Pune,Indian Angel Network,Angel,180000,MIT Incubator,Home Technology,Home security systems,No
+151,2023-12-01,AquaLabs,WaterTech,Analytics,Mumbai,Indian Angel Network,Seed,240000,CIE-IIITH,Water Technology,Water analytics dashboard,No
+152,2023-12-03,MoveGo,Transport,EV Mobility,Delhi,Blume Ventures,Series A,1350000,IIT Incubation,Transport,Electric mobility solutions,Yes
+153,2023-12-05,HealthGrid,HealthTech,Data,Bangalore,Accel,Seed,310000,NSRCEL,Healthcare,Health data platform,No
+154,2023-12-07,FinCore,FinTech,RiskTech,Mumbai,Tiger Global,Series B,2600000,CIE-IIITH,FinTech,Risk scoring engine,Yes
+155,2023-12-10,FreshHub,E-commerce,Grocery,Hyderabad,Venture Highway,Seed,220000,T-Hub,E-commerce,Urban grocery delivery,No
+156,2023-12-12,SafeSense,Security,AI Monitoring,Chennai,SAIF Partners,Series A,960000,IIM Incubator,Security,AI surveillance systems,Yes
+157,2023-12-15,Agrimax,Agritech,Supply Chain,Pune,Omnivore,Seed,340000,MIT Incubator,Agriculture,Farm-to-market supply chain,No
+158,2023-12-17,TechSphere,Technology,SaaS,Bangalore,Sequoia,Series A,1280000,NSRCEL,Technology,Workflow SaaS tools,Yes
+159,2023-12-19,FoodCraft,FoodTech,Ready Meals,Delhi,Lightrock,Seed,210000,IIT Incubation,Food Technology,Packaged ready meals,No
+160,2023-12-22,UrbanLift,Transport,Last Mile,Mumbai,Accel,Seed,300000,CIE-IIITH,Transport,Last-mile EV solutions,Yes
+161,2023-12-24,SolarEdge,Energy,SolarTech,Hyderabad,Aavishkaar Capital,Series A,1500000,T-Hub,Energy,Smart solar converters,Yes
+162,2023-12-26,LearnHive,EdTech,Learning,Bangalore,Byju’s,Angel,160000,NSRCEL,Education,Adaptive learning platform,No
+163,2023-12-28,PayWave,FinTech,Payments,Chennai,RTP Global,Seed,290000,IIM Incubator,FinTech,UPI-based payment solutions,No
+164,2023-12-30,RoboMedic,Robotics,Medical,Pune,Titan Capital,Series A,980000,MIT Incubator,Robotics,Robotic surgery assistants,Yes
+165,2024-01-02,AquaPure,WaterTech,Filtration,Delhi,Indian Angel Network,Angel,220000,IIT Incubation,Water Technology,Portable water filtration,No
+166,2024-01-04,HomePlan,PropTech,Interior,Hyderabad,Lightrock,Seed,250000,T-Hub,Real Estate,Home interior planning,No
+167,2024-01-06,AgroSense,Agritech,IoT,Bangalore,Omnivore,Seed,360000,NSRCEL,Agriculture,Smart farm IoT sensors,No
+168,2024-01-08,HealthPlus,HealthTech,Diagnostics,Mumbai,Chiratae Ventures,Pre-Series A,600000,CIE-IIITH,Healthcare,Diagnostic screening tools,Yes
+169,2024-01-10,MarketFlow,E-commerce,B2B,Chennai,Venture Highway,Seed,210000,IIM Incubator,E-commerce,B2B wholesale marketplace,No
+170,2024-01-12,SkyLift,Transport,Drones,Pune,Info Edge Ventures,Series A,1250000,MIT Incubator,Transport,Industrial drone systems,Yes
+171,2024-01-15,DataHive,Technology,Cloud,Bangalore,Sequoia,Series A,1400000,NSRCEL,Technology,Cloud workflow systems,Yes
+172,2024-01-17,FarmFresh,Agritech,Supply Chain,Delhi,Aavishkaar Capital,Seed,300000,IIT Incubation,Agriculture,Farm produce delivery,No
+173,2024-01-19,SafeHomeX,HomeTech,Security,Hyderabad,SAIF Partners,Series A,910000,T-Hub,Home Technology,Home intrusion detection,Yes
+174,2024-01-21,SkillWorks,EdTech,Upskilling,Chennai,Byju’s,Angel,170000,IIM Incubator,Education,Workforce upskilling app,No
+175,2024-01-23,FoodBox,FoodTech,Cloud Kitchen,Mumbai,Matrix Partners,Seed,220000,CIE-IIITH,Food Technology,Cloud kitchen aggregator,No
+176,2024-01-25,BuildSmart,Construction,AI,Pune,Blume Ventures,Pre-Series A,650000,MIT Incubator,Construction,AI construction tools,Yes
+177,2024-01-27,HealthSense,HealthTech,Monitoring,Bangalore,Tiger Global,Series A,880000,NSRCEL,Healthcare,Remote patient monitoring,Yes
+178,2024-01-29,FinWise,FinTech,Investment,Delhi,Accel,Seed,270000,IIT Incubation,FinTech,Micro-investment app,No
+179,2024-01-31,SoilMate,Agritech,SoilTech,Hyderabad,Omnivore,Seed,350000,T-Hub,Agriculture,Soil nutrient analysis,No
+180,2024-02-02,CloudBridge,Technology,API,Mumbai,Sequoia,Series B,2300000,CIE-IIITH,Technology,API infrastructure tools,Yes
+181,2024-02-04,RoboLift,Robotics,Industrial,Chennai,Titan Capital,Series A,980000,IIM Incubator,Robotics,Industrial lifting robots,Yes
+182,2024-02-06,FreshLeaf,FoodTech,Organic,Pune,Lightrock,Seed,200000,MIT Incubator,Food Technology,Organic produce delivery,No
+183,2024-02-08,PaySecure,FinTech,Security,Delhi,RTP Global,Series A,960000,IIT Incubation,FinTech,Payment fraud prevention,Yes
+184,2024-02-10,TeachBee,EdTech,K12,Bangalore,Byju’s,Angel,160000,NSRCEL,Education,K12 interactive learning,No
+185,2024-02-12,UrbanMove,Transport,EV,Hyderabad,Blume Ventures,Seed,300000,T-Hub,Transport,EV bike-sharing,No
+186,2024-02-14,SolarNova,Energy,Panels,Chennai,Aavishkaar Capital,Series A,1500000,IIM Incubator,Energy,Solar panel manufacturing,Yes
+187,2024-02-16,DataSense,Technology,Big Data,Mumbai,Chiratae Ventures,Series A,1280000,CIE-IIITH,Technology,Big data intelligence,Yes
+188,2024-02-18,AquaDrop,WaterTech,IoT,Delhi,Indian Angel Network,Seed,260000,IIT Incubation,Water Technology,IoT water meters,No
+189,2024-02-20,HealthBot,HealthTech,AI Robot,Bangalore,Titan Capital,Series B,2500000,NSRCEL,Healthcare,AI healthcare robot,Yes
+190,2024-02-22,FoodWave,FoodTech,Delivery,Hyderabad,Matrix Partners,Seed,210000,T-Hub,Food Technology,Hyperlocal meal delivery,No
+191,2024-02-24,FinBridge,FinTech,Lending,Mumbai,Accel,Pre-Series A,620000,CIE-IIITH,FinTech,AI lending platform,Yes
+192,2024-02-26,AgriLink,Agritech,Market,Chennai,Omnivore,Seed,320000,IIM Incubator,Agriculture,Farm marketplace,No
+193,2024-02-28,SkillCraft,EdTech,Skill Dev,Pune,Byju’s,Angel,150000,MIT Incubator,Education,Skill development courses,No
+194,2024-03-01,SolarWave,Energy,Storage,Delhi,Tata Capital,Series A,1400000,IIT Incubation,Energy,Renewable energy storage,Yes
+195,2024-03-03,RoboNet,Robotics,Automation,Bangalore,Titan Capital,Series A,920000,NSRCEL,Robotics,Automation robotics,Yes
+196,2024-03-05,TechLine,Technology,Cloud,Pune,Sequoia,Seed,330000,MIT Incubator,Technology,Cloud operations tools,No
+197,2024-03-07,Agrisoft,Agritech,SaaS,Hyderabad,Omnivore,Seed,310000,T-Hub,Agriculture,Agri SaaS solutions,No
+198,2024-03-09,HomeGrid,HomeTech,Energy,Mumbai,Lightrock,Pre-Series A,680000,CIE-IIITH,Home Technology,Home energy management,Yes
+199,2024-03-11,FinAssist,FinTech,Banking,Delhi,Accel,Seed,260000,IIT Incubation,FinTech,Digital banking assistant,No
+200,2024-03-13,Freshly,FoodTech,Fresh Produce,Bangalore,Venture Highway,Seed,210000,NSRCEL,Food Technology,Fresh produce marketplace,No
