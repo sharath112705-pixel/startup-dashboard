@@ -2,103 +2,77 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-st.set_page_config(page_title="Startup Funding Dashboard", layout="wide")
+st.set_page_config(page_title="Startup Dashboard", layout="wide")
 
-# -----------------------
-# 1) Load CSV
-# -----------------------
 st.title("🚀 Startup Funding Dashboard")
 
-uploaded_file = st.file_uploader("Upload your startup CSV file", type="csv")
+uploaded_file = st.file_uploader("Upload 'startups.csv' file", type="csv")
 
 if uploaded_file:
     df = pd.read_csv(uploaded_file)
 
-    # CLEAN COLUMN NAMES
-    df.columns = df.columns.str.strip().str.lower().str.replace(" ", "").str.replace("-", "")
+    # Clean column names
+    df.columns = df.columns.str.lower().str.replace(" ", "_")
 
-    # FIX BAD DATE COLUMN NAME
-    if "date_dd/mm/yyyy" in df.columns:
-        df.rename(columns={"date_dd/mm/yyyy": "date"}, inplace=True)
+    df["date"] = pd.to_datetime(df["date"], errors="coerce")
+    df["amount_in_usd"] = pd.to_numeric(df["amount_in_usd"], errors="coerce")
 
-    # Convert date
-    if "date" in df.columns:
-        df["date"] = pd.to_datetime(df["date"], errors="coerce")
-
-    # Clean USD Column
-    if "amount_in_usd" in df.columns:
-        df["amount_in_usd"] = (
-            df["amount_in_usd"]
-            .astype(str)
-            .str.replace(",", "")
-            .str.replace("$", "")
-        )
-        df["amount_in_usd"] = pd.to_numeric(df["amount_in_usd"], errors="coerce")
-
-    # -----------------------
-    # 2) SIDEBAR FILTERS
-    # -----------------------
+    # Sidebar filters
     st.sidebar.header("Filters")
+    cities = sorted(df["city_location"].unique())
+    sectors = sorted(df["sector"].unique())
 
-    # City filter
-    city_list = sorted(df["city__location"].dropna().unique())
-    city_filter = st.sidebar.multiselect("Select City", city_list)
+    city_filter = st.sidebar.multiselect("Choose City", cities)
+    sector_filter = st.sidebar.multiselect("Choose Sector", sectors)
 
-    # Sector filter
-    sector_list = sorted(df["sector"].dropna().unique())
-    sector_filter = st.sidebar.multiselect("Select Sector", sector_list)
-
-    filtered_df = df.copy()
+    filtered = df.copy()
 
     if city_filter:
-        filtered_df = filtered_df[filtered_df["city__location"].isin(city_filter)]
-
+        filtered = filtered[filtered["city_location"].isin(city_filter)]
     if sector_filter:
-        filtered_df = filtered_df[filtered_df["sector"].isin(sector_filter)]
+        filtered = filtered[filtered["sector"].isin(sector_filter)]
 
-    # -----------------------
-    # 3) METRICS
-    # -----------------------
-    st.subheader("📊 Key Metrics")
-
+    # Metrics
     col1, col2, col3 = st.columns(3)
-    col1.metric("Total Startups", len(filtered_df))
-    col2.metric("Total Funding (USD)", f"${filtered_df['amount_in_usd'].sum():,}")
-    col3.metric("Unique Sectors", filtered_df["sector"].nunique())
+    col1.metric("Total Startups", len(filtered))
+    col2.metric("Total Funding", f"${filtered['amount_in_usd'].sum():,}")
+    col3.metric("Unique Sectors", filtered['sector'].nunique())
 
-    # -----------------------
-    # 4) FUNDING CHART
-    # -----------------------
-    if "sector" in filtered_df.columns:
-        funding_by_sector = (
-            filtered_df.groupby("sector")["amount_in_usd"]
-            .sum()
-            .reset_index()
-            .sort_values("amount_in_usd", ascending=False)
-        )
+    # Funding by Sector
+    st.subheader("📊 Funding by Sector")
+    sector_funding = (
+        filtered.groupby("sector")["amount_in_usd"]
+        .sum()
+        .reset_index()
+        .sort_values("amount_in_usd", ascending=False)
+    )
+    st.plotly_chart(
+        px.bar(sector_funding, x="sector", y="amount_in_usd", title="Funding by Sector"),
+        use_container_width=True
+    )
 
-        fig1 = px.bar(
-            funding_by_sector,
-            x="sector",
-            y="amount_in_usd",
-            title="Funding by Sector",
-        )
-        st.plotly_chart(fig1, use_container_width=True)
+    # Funding by City
+    st.subheader("🏙 Funding by City")
+    city_funding = (
+        filtered.groupby("city_location")["amount_in_usd"]
+        .sum()
+        .reset_index()
+    )
+    st.plotly_chart(
+        px.pie(city_funding, values="amount_in_usd", names="city_location", title="City Funding Share"),
+        use_container_width=True
+    )
 
-    # -----------------------
-    # 5) STARTUPS TABLE
-    # -----------------------
-    st.subheader("📄 Startup Data")
-    st.dataframe(filtered_df)
+    # Table
+    st.subheader("📄 Dataset Preview")
+    st.dataframe(filtered)
 
-    # -----------------------
-    # 6) INSIGHTS
-    # -----------------------
+    # Insights
     st.subheader("💡 Insights")
 
-    if not funding_by_sector.empty:
-        top_sector = funding_by_sector.iloc[0]["sector"]
+    if len(sector_funding) > 0:
+        top_sector = sector_funding.iloc[0]["sector"]
         st.write(f"✔ *Highest funded sector:* {top_sector}")
 
 else:
-    st.info("👆 Upload your CSV file to continue.")
+    st.info("Upload the CSV file to see the dashboard.")
