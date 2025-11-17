@@ -2,99 +2,94 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-st.set_page_config(
-    page_title="🚀 Indian Startup Dashboard",
-    layout="wide",
-    page_icon="📊"
-)
+st.set_page_config(page_title="🚀 Startup Funding Dashboard", layout="wide", page_icon="📊")
 
-st.markdown("<h1 style='text-align:center;color:#00eaff;'>India Startup Intelligence Dashboard</h1>",
-            unsafe_allow_html=True)
+st.title("🚀 Indian Startup Funding Dashboard")
 
-uploaded_file = st.file_uploader("📌 Upload merged Startup Dataset (.csv)", type="csv")
+uploaded_file = st.file_uploader("Upload startup dataset (.csv)", type="csv")
 
 if uploaded_file:
     df = pd.read_csv(uploaded_file)
 
+    # Clean column names
     df.columns = df.columns.str.lower().str.replace(" ", "_")
-    df["amount_in_usd"] = pd.to_numeric(df["amount_in_usd"], errors="coerce")
-    df["date"] = pd.to_datetime(df["date"], errors="coerce")
 
-    # Sidebar Filters
+    # Standardize possible column names
+    city_col = None
+    for col in ["city", "city_location", "location"]:
+        if col in df.columns:
+            city_col = col
+            break
+
+    sector_col = None
+    for col in ["industry_vertical", "sector", "industry", "vertical"]:
+        if col in df.columns:
+            sector_col = col
+            break
+
+    startup_col = None
+    for col in ["startup_name", "startup", "company"]:
+        if col in df.columns:
+            startup_col = col
+            break
+
+    amount_col = None
+    for col in ["amount_in_usd", "amount", "funding"]:
+        if col in df.columns:
+            amount_col = col
+            break
+
+    date_col = None
+    for col in ["date", "funded_date", "year"]:
+        if col in df.columns:
+            date_col = col
+            break
+
+    # Convert column types safely
+    df[amount_col] = pd.to_numeric(df[amount_col], errors="coerce")
+    df[date_col] = pd.to_datetime(df[date_col], errors="coerce")
+
+    # Sidebar filters
     st.sidebar.header("🔍 Filters")
-    city = st.sidebar.multiselect("City", sorted(df["city"].dropna().unique()))
-    sector = st.sidebar.multiselect("Sector", sorted(df["industry_vertical"].dropna().unique()))
+    city_filter = st.sidebar.multiselect("City", sorted(df[city_col].dropna().unique()))
+    sector_filter = st.sidebar.multiselect("Sector", sorted(df[sector_col].dropna().unique()))
 
     filtered = df.copy()
-    if city:
-        filtered = filtered[filtered["city"].isin(city)]
-    if sector:
-        filtered = filtered[filtered["industry_vertical"].isin(sector)]
+    if city_filter:
+        filtered = filtered[filtered[city_col].isin(city_filter)]
+    if sector_filter:
+        filtered = filtered[sector_col].isin(sector_filter)]
 
     # KPIs
-    st.markdown("### 📌 Key Metrics")
-    k1, k2, k3 = st.columns(3)
+    total_funding = filtered[amount_col].sum()
+    total_startups = filtered[startup_col].nunique()
+    unique_sectors = filtered[sector_col].nunique()
 
-    total_funding = filtered["amount_in_usd"].sum()
-    total_startups = filtered["startup_name"].nunique()
-    unique_sectors = filtered["industry_vertical"].nunique()
-
-    k1.metric("💰 Total Funding", f"${total_funding:,.0f}")
-    k2.metric("🚀 Total Startups", total_startups)
-    k3.metric("🏭 Sectors Covered", unique_sectors)
+    kpi1, kpi2, kpi3 = st.columns(3)
+    kpi1.metric("💰 Total Funding", f"${total_funding:,.0f}")
+    kpi2.metric("🚀 Total Startups", total_startups)
+    kpi3.metric("🏭 Sectors", unique_sectors)
 
     st.markdown("---")
 
-    st.markdown("## 📊 Visual Insights")
+    # City Funding Chart
+    st.subheader("📍 Funding by City")
+    city_funding = filtered.groupby(city_col)[amount_col].sum().reset_index()
+    st.plotly_chart(px.bar(city_funding, x=city_col, y=amount_col), use_container_width=True)
 
-    tab1, tab2, tab3, tab4 = st.tabs(
-        ["📍 City Funding", "💼 Sector Distribution", "📈 Funding Trend", "🏆 Top Funded Startups"]
-    )
+    # Sector Funding Chart
+    st.subheader("💼 Funding by Sector")
+    sector_funding = filtered.groupby(sector_col)[amount_col].sum().reset_index()
+    st.plotly_chart(px.pie(sector_funding, values=amount_col, names=sector_col), use_container_width=True)
 
-    with tab1:
-        city_funding = filtered.groupby("city")["amount_in_usd"].sum().reset_index()
-        if not city_funding.empty:
-            fig1 = px.bar(city_funding, x="city", y="amount_in_usd",
-                          title="Funding by Cities", text_auto=True)
-            st.plotly_chart(fig1, use_container_width=True)
-        else:
-            st.warning("No data available for the selected filter.")
+    # Trend Chart
+    st.subheader("📈 Funding Trend Over Time")
+    trend = filtered.groupby(filtered[date_col].dt.year)[amount_col].sum()
+    st.line_chart(trend)
 
-    with tab2:
-        sector_funding = filtered.groupby("industry_vertical")["amount_in_usd"].sum().reset_index()
-        if not sector_funding.empty:
-            fig2 = px.pie(sector_funding, values="amount_in_usd",
-                          names="industry_vertical", title="Sector-wise Funding Share")
-            st.plotly_chart(fig2, use_container_width=True)
-        else:
-            st.warning("No data available for the selected filter.")
+    # View Data
+    st.markdown("### 📄 Filtered Data")
+    st.dataframe(filtered)
 
-    with tab3:
-        trend = filtered.groupby(filtered["date"].dt.to_period("M"))["amount_in_usd"].sum().reset_index()
-        trend["date"] = trend["date"].astype(str)
-        if not trend.empty:
-            fig3 = px.line(trend, x="date", y="amount_in_usd", markers=True,
-                           title="Funding Trend Over Time")
-            st.plotly_chart(fig3, use_container_width=True)
-        else:
-            st.warning("No data available for the selected filter.")
-
-    with tab4:
-        top_funded = filtered.groupby("startup_name")["amount_in_usd"].sum().nlargest(10).reset_index()
-        if not top_funded.empty:
-            fig4 = px.bar(top_funded, x="amount_in_usd", y="startup_name", orientation="h",
-                          title="Top Funded Startups")
-            st.plotly_chart(fig4, use_container_width=True)
-        else:
-            st.warning("No data available for the selected filter.")
-
-    st.markdown("---")
-    st.markdown("## 📄 Dataset View")
-    st.dataframe(filtered, use_container_width=True)
-
-    csv = filtered.to_csv(index=False).encode("utf-8")
-    st.download_button("⬇ Download Filtered Dataset",
-                       data=csv, file_name="filtered_startups.csv",
-                       mime="text/csv")
 else:
-    st.info("👆 Please upload the merged startup dataset to continue.")
+    st.info("Please upload the CSV file to see the dashboard.")
