@@ -8,8 +8,6 @@ from datetime import datetime
 
 # ---------- Config ----------
 st.set_page_config(page_title="India Startup Intelligence", layout="wide", page_icon="📈")
-
-# fallback path (your uploaded / drive file)
 DATA_FILE = "india_startup_funding_2015_2025_REAL_CLEANED_v2.csv"
 
 # ---------- Helpers ----------
@@ -31,20 +29,14 @@ def clean_amount_series(s):
     s = s.replace(['undisclosed','nan','none','None',''], np.nan)
     return pd.to_numeric(s, errors='coerce')
 
-# small city -> lat/lon table (major metros)
+# ---------- City Coords ----------
 CITY_COORDS = {
-    "bengaluru": (12.9716, 77.5946),
-    "bangalore": (12.9716, 77.5946),
-    "mumbai": (19.0760, 72.8777),
-    "delhi": (28.7041, 77.1025),
-    "new delhi": (28.6139, 77.2090),
-    "chennai": (13.0827, 80.2707),
-    "hyderabad": (17.3850, 78.4867),
-    "pune": (18.5204, 73.8567),
-    "kolkata": (22.5726, 88.3639),
-    "ahmedabad": (23.0225, 72.5714),
-    "gurgaon": (28.4595, 77.0266),
-    "noida": (28.5355, 77.3910)
+    "bengaluru": (12.9716, 77.5946), "bangalore": (12.9716, 77.5946),
+    "mumbai": (19.0760, 72.8777), "delhi": (28.7041, 77.1025),
+    "new delhi": (28.6139, 77.2090), "chennai": (13.0827, 80.2707),
+    "hyderabad": (17.3850, 78.4867), "pune": (18.5204, 73.8567),
+    "kolkata": (22.5726, 88.3639), "ahmedabad": (23.0225, 72.5714),
+    "gurgaon": (28.4595, 77.0266), "noida": (28.5355, 77.3910)
 }
 
 def geocode_city(city):
@@ -58,14 +50,13 @@ def geocode_city(city):
 
 # ---------- UI ----------
 st.title("🚀 India Startup Intelligence")
-
 uploaded = st.file_uploader("Upload merged CSV", type=["csv"])
 df = load_dataframe(uploaded)
 
 if df is None:
     st.stop()
 
-# ---------- CLEANING ----------
+# ---------- Cleaning ----------
 df.columns = df.columns.str.strip().str.lower().str.replace(" ", "_")
 
 date_col = find_column(df, ["date"])
@@ -79,7 +70,6 @@ meity_col = find_column(df, ["is_meity_recognized"])
 
 df[amount_col] = clean_amount_series(df[amount_col])
 df[date_col] = pd.to_datetime(df[date_col], errors='coerce')
-
 df = df.dropna(subset=[date_col, amount_col, startup_col])
 df['year'] = df[date_col].dt.year
 
@@ -100,7 +90,6 @@ city_list = sorted(df[city_col].dropna().unique())
 industry_sel = st.sidebar.multiselect("Industry Vertical", industry_list, default=industry_list)
 sector_sel = st.sidebar.multiselect("Sector", sector_list, default=sector_list)
 city_sel = st.sidebar.multiselect("City", city_list, default=city_list)
-
 meity_sel = st.sidebar.multiselect("MeitY Recognition", ["Yes","No"], default=["Yes","No"])
 top_n = st.sidebar.slider("Top N", 5, 25, 10)
 
@@ -116,21 +105,22 @@ filtered = df[
 # ---------- KPIs ----------
 st.markdown("## Key metrics")
 col1, col2, col3, col4 = st.columns(4)
-
 total_funding = filtered[amount_col].sum()
 unique_startups = filtered[startup_col].nunique()
 avg_round = filtered[amount_col].mean()
-meity_pct = (filtered[meity_col] == "Yes").mean() * 100 if not filtered.empty else 0
+meity_pct = (filtered[meity_col]=="Yes").mean()*100 if not filtered.empty else 0
 
 col1.metric("💰 Total Funding", f"${total_funding:,.0f}")
 col2.metric("🚀 Unique Startups", unique_startups)
 col3.metric("💸 Avg Funding Round", f"${avg_round:,.0f}")
 col4.metric("🏛 MeitY Recognized", f"{meity_pct:.1f}%")
 
-# ---------- MeitY Pie ----------
+# ---------- ✅ FIXED MeitY PIE ----------
 st.subheader("MeitY Recognition Breakdown")
 meity_df = filtered[meity_col].value_counts().reset_index()
-fig_meity = px.pie(meity_df, names="index", values=meity_col, hole=0.4)
+meity_df.columns = ["Recognition", "Count"]
+
+fig_meity = px.pie(meity_df, names="Recognition", values="Count", hole=0.4)
 st.plotly_chart(fig_meity, use_container_width=True)
 
 # ---------- Map + Cities ----------
