@@ -9,7 +9,6 @@ from datetime import datetime
 # ---------- Config ----------
 st.set_page_config(page_title="India Startup Intelligence", layout="wide", page_icon="📈")
 
-# fallback path (your uploaded / drive file)
 DATA_FILE = "india_startup_funding_2015_2025_REAL_CLEANED_v2.csv"
 
 # ---------- Helpers ----------
@@ -37,7 +36,6 @@ def clean_amount_series(s):
     s = s.replace(['undisclosed','nan','none','None',''], np.nan)
     return pd.to_numeric(s, errors='coerce')
 
-# small city -> lat/lon table (major metros)
 CITY_COORDS = {
     "bengaluru": (12.9716, 77.5946),
     "bangalore": (12.9716, 77.5946),
@@ -56,8 +54,7 @@ CITY_COORDS = {
 }
 
 def geocode_city(city):
-    if pd.isna(city):
-        return (np.nan, np.nan)
+    if pd.isna(city): return (np.nan, np.nan)
     name = str(city).strip().lower()
     for k,v in CITY_COORDS.items():
         if k in name:
@@ -67,44 +64,13 @@ def geocode_city(city):
 def generate_insights(df, amount_col, city_col, sector_col, date_col, investor_col):
     insights = []
     try:
-        total = df[amount_col].sum(skipna=True)
-        insights.append(f"Total funding in the filtered data: ${total:,.0f}.")
+        insights.append(f"Total funding: ${df[amount_col].sum():,.0f}")
+        insights.append(f"Top sector: {df.groupby(sector_col)[amount_col].sum().idxmax()}")
+        insights.append(f"Top city: {df[city_col].mode()[0]}")
+        invs = df[investor_col].str.split(',').explode().str.strip()
+        insights.append(f"Top investor: {invs.value_counts().idxmax()}")
     except:
         pass
-    try:
-        top_sector = df.groupby(sector_col)[amount_col].sum().idxmax()
-        top_sector_amt = df.groupby(sector_col)[amount_col].sum().max()
-        insights.append(f"{top_sector} received the highest funding (~${top_sector_amt:,.0f}).")
-    except:
-        pass
-    try:
-        city_counts = df[city_col].value_counts(normalize=True, dropna=True)
-        if not city_counts.empty:
-            top_city = city_counts.index[0]
-            share = city_counts.iloc[0] * 100
-            insights.append(f"{top_city} contains {share:.1f}% of startups in the filtered set.")
-    except:
-        pass
-    try:
-        df_time = df.dropna(subset=[date_col, amount_col]).copy()
-        df_time['year'] = df_time[date_col].dt.year
-        yearly = df_time.groupby('year')[amount_col].sum().sort_index()
-        if len(yearly) >= 2 and yearly.iloc[0] != 0:
-            growth = (yearly.iloc[-1] - yearly.iloc[0]) / yearly.iloc[0] * 100
-            insights.append(f"Funding changed by {growth:.1f}% between {yearly.index[0]} and {yearly.index[-1]}.")
-    except:
-        pass
-    try:
-        invs = df[investor_col].dropna().astype(str).str.split(',').explode().str.strip()
-        top_inv = invs.value_counts().head(1)
-        if not top_inv.empty:
-            inv_name = top_inv.index[0]
-            deals = int(top_inv.iloc[0])
-            insights.append(f"Top active investor: {inv_name} ({deals} deals).")
-    except:
-        pass
-    if not insights:
-        insights.append("No strong patterns found — adjust filters to explore different slices.")
     return insights
 
 # ---------- UI ----------
@@ -116,10 +82,8 @@ df = load_dataframe(uploaded)
 if df is None:
     st.stop()
 
-# normalize columns
 df.columns = df.columns.str.strip().str.lower().str.replace(" ", "_")
 
-# detect relevant columns
 date_col = find_column(df, ["date"])
 startup_col = find_column(df, ["startup_name"])
 city_col = find_column(df, ["city"])
@@ -129,42 +93,26 @@ amount_col = find_column(df, ["amount_in_usd"])
 investor_col = find_column(df, ["investors_name"])
 meity_col = find_column(df, ["is_meity_recognized"])
 
-# basic cleaning
 df[amount_col] = clean_amount_series(df[amount_col])
-df[date_col] = pd.to_datetime(df[date_col], errors='coerce')
+df[date_col] = pd.to_datetime(df[date_col], errors="coerce")
 df = df.dropna(subset=[date_col, amount_col, startup_col])
-df['year'] = df[date_col].dt.year
+df["year"] = df[date_col].dt.year
 
-# ---------- Sidebar: theme + filters ----------
+# ---------- Sidebar ----------
 st.sidebar.header("Controls")
 
-theme_choice = st.sidebar.radio("Theme", options=["Dark", "Light"], index=0)
-dark_mode = theme_choice == "Dark"
+theme_choice = st.sidebar.radio("Theme", ["Dark", "Light"])
+year_range = st.sidebar.slider("Year Range", int(df.year.min()), int(df.year.max()), (int(df.year.min()), int(df.year.max())))
 
-year_min = int(df['year'].min())
-year_max = int(df['year'].max())
+industry_sel = st.sidebar.multiselect("Industry", df[industry_col].unique(), default=df[industry_col].unique())
+sector_sel = st.sidebar.multiselect("Sector", df[sector_col].unique(), default=df[sector_col].unique())
+city_sel = st.sidebar.multiselect("City", df[city_col].unique(), default=df[city_col].unique())
+meity_sel = st.sidebar.multiselect("MeitY", df[meity_col].unique(), default=df[meity_col].unique())
 
-year_range = st.sidebar.slider(
-    "Year range",
-    min_value=year_min,
-    max_value=year_max,
-    value=(year_min, year_max)
-)
+top_n = st.sidebar.slider("Top N", 5, 25, 10)
 
-industry_list = sorted(df[industry_col].dropna().unique())
-sector_list = sorted(df[sector_col].dropna().unique())
-city_list = sorted(df[city_col].dropna().unique())
-
-industry_sel = st.sidebar.multiselect("Industry Vertical", industry_list, default=industry_list)
-sector_sel = st.sidebar.multiselect("Sector", sector_list, default=sector_list)
-city_sel = st.sidebar.multiselect("City", city_list, default=city_list)
-meity_sel = st.sidebar.multiselect("MeitY Recognition", ["Yes","No"], default=["Yes","No"])
-
-top_n = st.sidebar.slider("Top N (charts)", 5, 25, 10)
-
-# ---------- Apply Filters ----------
 filtered = df[
-    (df['year'].between(year_range[0], year_range[1])) &
+    (df["year"].between(year_range[0], year_range[1])) &
     (df[industry_col].isin(industry_sel)) &
     (df[sector_col].isin(sector_sel)) &
     (df[city_col].isin(city_sel)) &
@@ -172,93 +120,72 @@ filtered = df[
 ]
 
 # ---------- KPIs ----------
-st.markdown("## Key metrics")
-col1, col2, col3, col4 = st.columns(4)
+st.markdown("## Key Metrics")
+k1, k2, k3, k4 = st.columns(4)
+k1.metric("Total Funding", f"${filtered[amount_col].sum():,.0f}")
+k2.metric("Startups", filtered[startup_col].nunique())
+k3.metric("Avg Round", f"${filtered[amount_col].mean():,.0f}")
+k4.metric("MeitY %", f"{(filtered[meity_col]=='Yes').mean()*100:.1f}%")
 
-total_funding = filtered[amount_col].sum()
-unique_startups = filtered[startup_col].nunique()
-avg_round = filtered[amount_col].mean()
-meity_pct = (filtered[meity_col] == "Yes").mean() * 100 if len(filtered) > 0 else 0
+# ================================
+# DASHBOARD VISUALIZATION GRID
+# ================================
 
-col1.metric("💰 Total Funding", f"${total_funding:,.0f}")
-col2.metric("🚀 Unique Startups", f"{unique_startups}")
-col3.metric("💸 Avg Funding Round", f"${avg_round:,.0f}")
-col4.metric("🏛 MeitY Recognized", f"{meity_pct:.1f}%")
+# ---------- ROW 1 ----------
+row1_col1, row1_col2 = st.columns(2)
 
-# ---------- MeitY Pie ----------
-st.subheader("MeitY Recognition Breakdown")
-meity_df = filtered[meity_col].value_counts().reset_index()
-meity_df.columns = ["Recognition", "Count"]
-fig_meity = px.pie(meity_df, names="Recognition", values="Count", hole=0.4)
-st.plotly_chart(fig_meity, use_container_width=True)
+with row1_col1:
+    meity_df = filtered[meity_col].value_counts().reset_index()
+    meity_df.columns = ["Recognition", "Count"]
+    fig_meity = px.pie(meity_df, names="Recognition", values="Count", hole=0.4)
+    st.plotly_chart(fig_meity, use_container_width=True)
 
-# ---------- Smart Insights ----------
-st.subheader("Smart Insights")
-insights = generate_insights(filtered, amount_col, city_col, sector_col, date_col, investor_col)
-for i, text in enumerate(insights, 1):
-    st.write(f"{i}. {text}")
+with row1_col2:
+    st.subheader("Smart Insights")
+    for i in generate_insights(filtered, amount_col, city_col, sector_col, date_col, investor_col):
+        st.write("•", i)
 
-# ---------- Map + Top Cities ----------
-st.markdown("---")
-left, right = st.columns([3,2])
+# ---------- ROW 2 ----------
+row2_col1, row2_col2 = st.columns(2)
 
-with left:
-    st.subheader("Startup Map (city-level)")
-    if not filtered.empty:
-        temp = filtered.copy()
-        temp[['lat','lon']] = temp[city_col].apply(lambda x: pd.Series(geocode_city(x)))
-        map_df = temp.dropna(subset=['lat','lon'])
+with row2_col1:
+    temp = filtered.copy()
+    temp[["lat","lon"]] = temp[city_col].apply(lambda x: pd.Series(geocode_city(x)))
+    map_df = temp.dropna(subset=["lat","lon"])
+    fig_map = px.scatter_mapbox(map_df, lat="lat", lon="lon", hover_name=startup_col, size=amount_col, zoom=4)
+    fig_map.update_layout(mapbox_style="open-street-map")
+    st.plotly_chart(fig_map, use_container_width=True)
 
-        if not map_df.empty:
-            fig_map = px.scatter_mapbox(
-                map_df,
-                lat='lat',
-                lon='lon',
-                hover_name=startup_col,
-                size=amount_col,
-                zoom=4
-            )
-            fig_map.update_layout(mapbox_style="open-street-map")
-            st.plotly_chart(fig_map, use_container_width=True)
-
-with right:
-    st.subheader("Top Cities by Funding")
-    city_sum = filtered.groupby(city_col)[amount_col].sum().sort_values(ascending=False).head(top_n).reset_index()
-    fig_city = px.bar(city_sum, x=amount_col, y=city_col, orientation='h')
+with row2_col2:
+    city_sum = filtered.groupby(city_col)[amount_col].sum().reset_index()
+    fig_city = px.bar(city_sum, x=amount_col, y=city_col, orientation="h")
     st.plotly_chart(fig_city, use_container_width=True)
 
-# ---------- Sector treemap ----------
-st.subheader("Sector (Treemap) — Top contributors")
-sec_df = filtered.groupby(sector_col)[amount_col].sum().reset_index()
-fig_sec = px.treemap(sec_df, path=[sector_col], values=amount_col)
-st.plotly_chart(fig_sec, use_container_width=True)
+# ---------- ROW 3 ----------
+row3_col1, row3_col2 = st.columns(2)
 
-# ---------- Funding trend ----------
-st.subheader("Funding Trend (monthly)")
-trend = filtered.groupby(pd.Grouper(key=date_col, freq='M'))[amount_col].sum().reset_index()
-fig_trend = px.line(trend, x=date_col, y=amount_col)
-st.plotly_chart(fig_trend, use_container_width=True)
+with row3_col1:
+    sec_df = filtered.groupby(sector_col)[amount_col].sum().reset_index()
+    fig_sec = px.treemap(sec_df, path=[sector_col], values=amount_col)
+    st.plotly_chart(fig_sec, use_container_width=True)
 
-# ---------- Investors panel ----------
+with row3_col2:
+    trend = filtered.groupby(pd.Grouper(key=date_col, freq="M"))[amount_col].sum().reset_index()
+    fig_trend = px.line(trend, x=date_col, y=amount_col)
+    st.plotly_chart(fig_trend, use_container_width=True)
+
+# ---------- ROW 4 ----------
 st.markdown("---")
-st.subheader("Top Investors Explorer")
+invs = filtered[investor_col].astype(str).str.split(",").explode()
+inv_summary = invs.value_counts().head(top_n).reset_index()
+inv_summary.columns = ["Investor", "Deals"]
+fig_inv = px.bar(inv_summary, x="Deals", y="Investor", orientation="h")
+st.plotly_chart(fig_inv, use_container_width=True)
 
-if not filtered.empty:
-    invs = filtered[investor_col].astype(str).str.split(',').explode()
-    invs = invs[~invs.isin(['', 'nan', 'None'])]
-
-    inv_summary = invs.value_counts().head(top_n).reset_index()
-    inv_summary.columns = ["Investor", "Deals"]
-
-    fig_inv = px.bar(inv_summary, x="Deals", y="Investor", orientation='h')
-    st.plotly_chart(fig_inv, use_container_width=True)
-
-# ---------- Data & download ----------
+# ---------- Data ----------
 st.markdown("---")
-st.subheader("Filtered Data")
-st.dataframe(filtered.reset_index(drop=True))
-csv = filtered.to_csv(index=False).encode('utf-8')
-st.download_button("Download filtered CSV", csv, file_name="filtered_startups.csv", mime="text/csv")
+st.dataframe(filtered)
+csv = filtered.to_csv(index=False).encode("utf-8")
+st.download_button("Download CSV", csv, "filtered_startups.csv")
 
-# Footer
-st.markdown("<div style='text-align:center;color:gray;margin-top:10px'>Dashboard ready. Use filters to explore.</div>", unsafe_allow_html=True)
+st.markdown("<div style='text-align:center;color:gray'>Dashboard ready.</div>", unsafe_allow_html=True)
