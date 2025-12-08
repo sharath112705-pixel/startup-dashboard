@@ -50,11 +50,13 @@ CITY_COORDS = {
     "kolkata": (22.5726, 88.3639),
     "ahmedabad": (23.0225, 72.5714),
     "gurgaon": (28.4595, 77.0266),
-    "noida": (28.5355, 77.3910)
+    "noida": (28.5355, 77.3910),
+    "faridabad": (28.4089, 77.3178),
+    "ghaziabad": (28.6692, 77.4538)
 }
 
 def geocode_city(city):
-    if pd.isna(city): 
+    if pd.isna(city):
         return (np.nan, np.nan)
     name = str(city).strip().lower()
     for k,v in CITY_COORDS.items():
@@ -62,10 +64,53 @@ def geocode_city(city):
             return v
     return (np.nan, np.nan)
 
+def generate_insights(df, amount_col, city_col, sector_col, date_col, investor_col):
+    insights = []
+    try:
+        total = df[amount_col].sum(skipna=True)
+        insights.append(f"Total funding in the filtered data: ${total:,.0f}.")
+    except:
+        pass
+    try:
+        top_sector = df.groupby(sector_col)[amount_col].sum().idxmax()
+        top_sector_amt = df.groupby(sector_col)[amount_col].sum().max()
+        insights.append(f"{top_sector} received the highest funding (~${top_sector_amt:,.0f}).")
+    except:
+        pass
+    try:
+        city_counts = df[city_col].value_counts(normalize=True, dropna=True)
+        if not city_counts.empty:
+            top_city = city_counts.index[0]
+            share = city_counts.iloc[0] * 100
+            insights.append(f"{top_city} contains {share:.1f}% of startups in the filtered set.")
+    except:
+        pass
+    try:
+        df_time = df.dropna(subset=[date_col, amount_col]).copy()
+        df_time['year'] = df_time[date_col].dt.year
+        yearly = df_time.groupby('year')[amount_col].sum().sort_index()
+        if len(yearly) >= 2 and yearly.iloc[0] != 0:
+            growth = (yearly.iloc[-1] - yearly.iloc[0]) / yearly.iloc[0] * 100
+            insights.append(f"Funding changed by {growth:.1f}% between {yearly.index[0]} and {yearly.index[-1]}.")
+    except:
+        pass
+    try:
+        invs = df[investor_col].dropna().astype(str).str.split(',').explode().str.strip()
+        top_inv = invs.value_counts().head(1)
+        if not top_inv.empty:
+            inv_name = top_inv.index[0]
+            deals = int(top_inv.iloc[0])
+            insights.append(f"Top active investor: {inv_name} ({deals} deals).")
+    except:
+        pass
+    if not insights:
+        insights.append("No strong patterns found — adjust filters to explore different slices.")
+    return insights
+
 # ---------- UI ----------
 st.title("🚀 India Startup Intelligence")
 
-uploaded = st.file_uploader("Upload merged CSV", type=["csv"])
+uploaded = st.file_uploader("Upload merged CSV (optional)", type=["csv"])
 df = load_dataframe(uploaded)
 
 if df is None:
@@ -84,20 +129,26 @@ amount_col = find_column(df, ["amount_in_usd"])
 investor_col = find_column(df, ["investors_name"])
 meity_col = find_column(df, ["is_meity_recognized"])
 
-# basic checks
+# basic cleaning
 df[amount_col] = clean_amount_series(df[amount_col])
 df[date_col] = pd.to_datetime(df[date_col], errors='coerce')
 df = df.dropna(subset=[date_col, amount_col, startup_col])
 df['year'] = df[date_col].dt.year
 
-# ---------- Sidebar ----------
+# ---------- Sidebar: theme + filters ----------
 st.sidebar.header("Controls")
+
+theme_choice = st.sidebar.radio("Theme", options=["Dark", "Light"], index=0)
+dark_mode = theme_choice == "Dark"
+
+year_min = int(df['year'].min())
+year_max = int(df['year'].max())
 
 year_range = st.sidebar.slider(
     "Year range",
-    int(df['year'].min()),
-    int(df['year'].max()),
-    (int(df['year'].min()), int(df['year'].max()))
+    min_value=year_min,
+    max_value=year_max,
+    value=(year_min, year_max)
 )
 
 industry_list = sorted(df[industry_col].dropna().unique())
@@ -107,8 +158,8 @@ city_list = sorted(df[city_col].dropna().unique())
 industry_sel = st.sidebar.multiselect("Industry Vertical", industry_list, default=industry_list)
 sector_sel = st.sidebar.multiselect("Sector", sector_list, default=sector_list)
 city_sel = st.sidebar.multiselect("City", city_list, default=city_list)
-
 meity_sel = st.sidebar.multiselect("MeitY Recognition", ["Yes","No"], default=["Yes","No"])
+
 top_n = st.sidebar.slider("Top N (charts)", 5, 25, 10)
 
 # ---------- Apply Filters ----------
@@ -127,11 +178,11 @@ col1, col2, col3, col4 = st.columns(4)
 total_funding = filtered[amount_col].sum()
 unique_startups = filtered[startup_col].nunique()
 avg_round = filtered[amount_col].mean()
-meity_pct = (filtered[meity_col] == "Yes").mean()*100 if not filtered.empty else 0
+meity_pct = (filtered[meity_col] == "Yes").mean() * 100 if len(filtered) > 0 else 0
 
 col1.metric("💰 Total Funding", f"${total_funding:,.0f}")
 col2.metric("🚀 Unique Startups", f"{unique_startups}")
-col3.metric("💸 Avg Funding Round", f"${(avg_round or 0):,.0f}")
+col3.metric("💸 Avg Funding Round", f"${avg_round:,.0f}")
 col4.metric("🏛 MeitY Recognized", f"{meity_pct:.1f}%")
 
 # ---------- MeitY Pie ----------
@@ -141,6 +192,12 @@ meity_df.columns = ["Recognition", "Count"]
 fig_meity = px.pie(meity_df, names="Recognition", values="Count", hole=0.4)
 st.plotly_chart(fig_meity, use_container_width=True)
 
+# ---------- Smart Insights ----------
+st.subheader("Smart Insights")
+insights = generate_insights(filtered, amount_col, city_col, sector_col, date_col, investor_col)
+for i, text in enumerate(insights, 1):
+    st.write(f"{i}. {text}")
+
 # ---------- Map + Top Cities ----------
 st.markdown("---")
 left, right = st.columns([3,2])
@@ -149,12 +206,17 @@ with left:
     st.subheader("Startup Map (city-level)")
     if not filtered.empty:
         temp = filtered.copy()
-        temp['lat'], temp['lon'] = zip(*temp[city_col].map(geocode_city))
+        temp[['lat','lon']] = temp[city_col].apply(lambda x: pd.Series(geocode_city(x)))
         map_df = temp.dropna(subset=['lat','lon'])
+
         if not map_df.empty:
             fig_map = px.scatter_mapbox(
-                map_df, lat='lat', lon='lon', hover_name=startup_col,
-                size=amount_col, zoom=4
+                map_df,
+                lat='lat',
+                lon='lon',
+                hover_name=startup_col,
+                size=amount_col,
+                zoom=4
             )
             fig_map.update_layout(mapbox_style="open-street-map")
             st.plotly_chart(fig_map, use_container_width=True)
@@ -165,13 +227,13 @@ with right:
     fig_city = px.bar(city_sum, x=amount_col, y=city_col, orientation='h')
     st.plotly_chart(fig_city, use_container_width=True)
 
-# ---------- Sector Treemap ----------
+# ---------- Sector treemap ----------
 st.subheader("Sector (Treemap) — Top contributors")
 sec_df = filtered.groupby(sector_col)[amount_col].sum().reset_index()
 fig_sec = px.treemap(sec_df, path=[sector_col], values=amount_col)
 st.plotly_chart(fig_sec, use_container_width=True)
 
-# ---------- Funding Trend ----------
+# ---------- Funding trend ----------
 st.subheader("Funding Trend (monthly)")
 trend = filtered.groupby(pd.Grouper(key=date_col, freq='M'))[amount_col].sum().reset_index()
 fig_trend = px.line(trend, x=date_col, y=amount_col)
@@ -184,7 +246,7 @@ st.subheader("Top Investors Explorer")
 if not filtered.empty:
     invs = filtered[investor_col].astype(str).str.split(',').explode()
     invs = invs[~invs.isin(['', 'nan', 'None'])]
-    
+
     inv_summary = invs.value_counts().head(top_n).reset_index()
     inv_summary.columns = ["Investor", "Deals"]
 
