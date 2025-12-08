@@ -101,8 +101,12 @@ df["year"] = df[date_col].dt.year
 # ---------- Sidebar ----------
 st.sidebar.header("Controls")
 
-theme_choice = st.sidebar.radio("Theme", ["Dark", "Light"])
-year_range = st.sidebar.slider("Year Range", int(df.year.min()), int(df.year.max()), (int(df.year.min()), int(df.year.max())))
+year_range = st.sidebar.slider(
+    "Year Range",
+    int(df.year.min()),
+    int(df.year.max()),
+    (int(df.year.min()), int(df.year.max()))
+)
 
 industry_sel = st.sidebar.multiselect("Industry", df[industry_col].unique(), default=df[industry_col].unique())
 sector_sel = st.sidebar.multiselect("Sector", df[sector_col].unique(), default=df[sector_col].unique())
@@ -120,7 +124,7 @@ filtered = df[
 ]
 
 # ---------- KPIs ----------
-st.markdown("## Key Metrics")
+st.subheader("Key Metrics")
 k1, k2, k3, k4 = st.columns(4)
 k1.metric("Total Funding", f"${filtered[amount_col].sum():,.0f}")
 k2.metric("Startups", filtered[startup_col].nunique())
@@ -135,13 +139,14 @@ k4.metric("MeitY %", f"{(filtered[meity_col]=='Yes').mean()*100:.1f}%")
 row1_col1, row1_col2 = st.columns(2)
 
 with row1_col1:
+    st.subheader("MeitY Recognition Distribution (Pie Chart)")
     meity_df = filtered[meity_col].value_counts().reset_index()
     meity_df.columns = ["Recognition", "Count"]
     fig_meity = px.pie(meity_df, names="Recognition", values="Count", hole=0.4)
     st.plotly_chart(fig_meity, use_container_width=True)
 
 with row1_col2:
-    st.subheader("Smart Insights")
+    st.subheader("Smart Insights Summary")
     for i in generate_insights(filtered, amount_col, city_col, sector_col, date_col, investor_col):
         st.write("•", i)
 
@@ -149,14 +154,19 @@ with row1_col2:
 row2_col1, row2_col2 = st.columns(2)
 
 with row2_col1:
+    st.subheader("Startup Distribution Across India (Map)")
     temp = filtered.copy()
     temp[["lat","lon"]] = temp[city_col].apply(lambda x: pd.Series(geocode_city(x)))
     map_df = temp.dropna(subset=["lat","lon"])
-    fig_map = px.scatter_mapbox(map_df, lat="lat", lon="lon", hover_name=startup_col, size=amount_col, zoom=4)
+    fig_map = px.scatter_mapbox(
+        map_df, lat="lat", lon="lon",
+        hover_name=startup_col, size=amount_col, zoom=4
+    )
     fig_map.update_layout(mapbox_style="open-street-map")
     st.plotly_chart(fig_map, use_container_width=True)
 
 with row2_col2:
+    st.subheader("Top Cities by Total Funding (Bar Chart)")
     city_sum = filtered.groupby(city_col)[amount_col].sum().reset_index()
     fig_city = px.bar(city_sum, x=amount_col, y=city_col, orientation="h")
     st.plotly_chart(fig_city, use_container_width=True)
@@ -165,17 +175,20 @@ with row2_col2:
 row3_col1, row3_col2 = st.columns(2)
 
 with row3_col1:
+    st.subheader("Sector-wise Funding Contribution (Treemap)")
     sec_df = filtered.groupby(sector_col)[amount_col].sum().reset_index()
     fig_sec = px.treemap(sec_df, path=[sector_col], values=amount_col)
     st.plotly_chart(fig_sec, use_container_width=True)
 
 with row3_col2:
+    st.subheader("Monthly Funding Trend (Line Chart)")
     trend = filtered.groupby(pd.Grouper(key=date_col, freq="M"))[amount_col].sum().reset_index()
     fig_trend = px.line(trend, x=date_col, y=amount_col)
     st.plotly_chart(fig_trend, use_container_width=True)
 
 # ---------- ROW 4 ----------
 st.markdown("---")
+st.subheader("Top Investors by Number of Deals (Bar Chart)")
 invs = filtered[investor_col].astype(str).str.split(",").explode()
 inv_summary = invs.value_counts().head(top_n).reset_index()
 inv_summary.columns = ["Investor", "Deals"]
@@ -184,8 +197,10 @@ st.plotly_chart(fig_inv, use_container_width=True)
 
 # ---------- Data ----------
 st.markdown("---")
+st.subheader("Filtered Dataset Preview")
 st.dataframe(filtered)
+
 csv = filtered.to_csv(index=False).encode("utf-8")
-st.download_button("Download CSV", csv, "filtered_startups.csv")
+st.download_button("Download Filtered CSV", csv, "filtered_startups.csv")
 
 st.markdown("<div style='text-align:center;color:gray'>Dashboard ready.</div>", unsafe_allow_html=True)
