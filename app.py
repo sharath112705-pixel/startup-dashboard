@@ -1,4 +1,4 @@
-# app.py — Final Streamlit dashboard (two filters, MeitY fixed, theme toggle)
+# app.py — Final Streamlit dashboard (two filters, MeitY fixed)
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -29,7 +29,7 @@ def clean_amount_series(s):
     s = s.replace(['undisclosed','nan','none','None',''], np.nan)
     return pd.to_numeric(s, errors='coerce')
 
-# ---------- City Coords ----------
+# ---------- City coordinates ----------
 CITY_COORDS = {
     "bengaluru": (12.9716, 77.5946), "bangalore": (12.9716, 77.5946),
     "mumbai": (19.0760, 72.8777), "delhi": (28.7041, 77.1025),
@@ -50,6 +50,7 @@ def geocode_city(city):
 
 # ---------- UI ----------
 st.title("🚀 India Startup Intelligence")
+
 uploaded = st.file_uploader("Upload merged CSV", type=["csv"])
 df = load_dataframe(uploaded)
 
@@ -103,8 +104,9 @@ filtered = df[
 ]
 
 # ---------- KPIs ----------
-st.markdown("## Key metrics")
+st.markdown("## Key Metrics")
 col1, col2, col3, col4 = st.columns(4)
+
 total_funding = filtered[amount_col].sum()
 unique_startups = filtered[startup_col].nunique()
 avg_round = filtered[amount_col].mean()
@@ -115,15 +117,14 @@ col2.metric("🚀 Unique Startups", unique_startups)
 col3.metric("💸 Avg Funding Round", f"${avg_round:,.0f}")
 col4.metric("🏛 MeitY Recognized", f"{meity_pct:.1f}%")
 
-# ---------- ✅ FIXED MeitY PIE ----------
+# ---------- MeitY Pie ----------
 st.subheader("MeitY Recognition Breakdown")
 meity_df = filtered[meity_col].value_counts().reset_index()
 meity_df.columns = ["Recognition", "Count"]
-
 fig_meity = px.pie(meity_df, names="Recognition", values="Count", hole=0.4)
 st.plotly_chart(fig_meity, use_container_width=True)
 
-# ---------- Map + Cities ----------
+# ---------- Map & Cities ----------
 left, right = st.columns([3,2])
 
 with left:
@@ -159,12 +160,14 @@ trend = filtered.groupby(pd.Grouper(key=date_col, freq="M"))[amount_col].sum().r
 fig_trend = px.line(trend, x=date_col, y=amount_col)
 st.plotly_chart(fig_trend, use_container_width=True)
 
-# ---------- Investors ----------
+# ---------- ✅ FIXED Investors ----------
 st.subheader("Top Investors Explorer")
 if not filtered.empty:
     invs = filtered[investor_col].astype(str).str.split(',').explode()
     inv_summary = invs.value_counts().head(top_n).reset_index()
-    fig_inv = px.bar(inv_summary, x=investor_col, y="index", orientation="h")
+    inv_summary.columns = ["Investor", "Deals"]
+
+    fig_inv = px.bar(inv_summary, x="Deals", y="Investor", orientation="h")
     st.plotly_chart(fig_inv, use_container_width=True)
 
 # ---------- Data & Download ----------
