@@ -1,4 +1,4 @@
-# app.py — FINAL SAFE VERSION (2015–2025 REAL DATA READY)
+# app.py — Final Streamlit dashboard (two filters, MeitY fixed, theme toggle)
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -6,11 +6,13 @@ import plotly.express as px
 import os
 from datetime import datetime
 
-# ---------- CONFIG ----------
+# ---------- Config ----------
 st.set_page_config(page_title="India Startup Intelligence", layout="wide", page_icon="📈")
+
+# fallback path (your uploaded / drive file)
 DATA_FILE = "india_startup_funding_2015_2025_REAL_CLEANED_v2.csv"
 
-# ---------- HELPERS ----------
+# ---------- Helpers ----------
 def load_dataframe(uploaded_file):
     if uploaded_file is not None:
         return pd.read_csv(uploaded_file, low_memory=False)
@@ -29,7 +31,7 @@ def clean_amount_series(s):
     s = s.replace(['undisclosed','nan','none','None',''], np.nan)
     return pd.to_numeric(s, errors='coerce')
 
-# ---------- CITY COORDS ----------
+# small city -> lat/lon table (major metros)
 CITY_COORDS = {
     "bengaluru": (12.9716, 77.5946),
     "bangalore": (12.9716, 77.5946),
@@ -77,10 +79,11 @@ meity_col = find_column(df, ["is_meity_recognized"])
 
 df[amount_col] = clean_amount_series(df[amount_col])
 df[date_col] = pd.to_datetime(df[date_col], errors='coerce')
+
 df = df.dropna(subset=[date_col, amount_col, startup_col])
 df['year'] = df[date_col].dt.year
 
-# ---------- SIDEBAR FILTERS ----------
+# ---------- Sidebar ----------
 st.sidebar.header("Controls")
 
 year_range = st.sidebar.slider(
@@ -90,19 +93,18 @@ year_range = st.sidebar.slider(
     (int(df['year'].min()), int(df['year'].max()))
 )
 
-industry_sel = st.sidebar.multiselect("Industry", sorted(df[industry_col].dropna().unique()),
-                                      default=sorted(df[industry_col].dropna().unique()))
+industry_list = sorted(df[industry_col].dropna().unique())
+sector_list = sorted(df[sector_col].dropna().unique())
+city_list = sorted(df[city_col].dropna().unique())
 
-sector_sel = st.sidebar.multiselect("Sector", sorted(df[sector_col].dropna().unique()),
-                                    default=sorted(df[sector_col].dropna().unique()))
+industry_sel = st.sidebar.multiselect("Industry Vertical", industry_list, default=industry_list)
+sector_sel = st.sidebar.multiselect("Sector", sector_list, default=sector_list)
+city_sel = st.sidebar.multiselect("City", city_list, default=city_list)
 
-city_sel = st.sidebar.multiselect("City", sorted(df[city_col].dropna().unique()),
-                                  default=sorted(df[city_col].dropna().unique()))
-
-meity_sel = st.sidebar.multiselect("MeitY", ["Yes","No"], default=["Yes","No"])
+meity_sel = st.sidebar.multiselect("MeitY Recognition", ["Yes","No"], default=["Yes","No"])
 top_n = st.sidebar.slider("Top N", 5, 25, 10)
 
-# ---------- APPLY FILTERS ----------
+# ---------- Apply Filters ----------
 filtered = df[
     (df['year'].between(year_range[0], year_range[1])) &
     (df[industry_col].isin(industry_sel)) &
@@ -112,27 +114,26 @@ filtered = df[
 ]
 
 # ---------- KPIs ----------
-st.markdown("## Key Metrics")
+st.markdown("## Key metrics")
 col1, col2, col3, col4 = st.columns(4)
 
 total_funding = filtered[amount_col].sum()
 unique_startups = filtered[startup_col].nunique()
 avg_round = filtered[amount_col].mean()
-
-meity_pct = (filtered[meity_col]=="Yes").mean()*100 if not filtered.empty else 0
+meity_pct = (filtered[meity_col] == "Yes").mean() * 100 if not filtered.empty else 0
 
 col1.metric("💰 Total Funding", f"${total_funding:,.0f}")
 col2.metric("🚀 Unique Startups", unique_startups)
-col3.metric("💸 Avg Funding", f"${avg_round:,.0f}")
-col4.metric("🏛 MeitY %", f"{meity_pct:.1f}%")
+col3.metric("💸 Avg Funding Round", f"${avg_round:,.0f}")
+col4.metric("🏛 MeitY Recognized", f"{meity_pct:.1f}%")
 
-# ---------- PIE ----------
+# ---------- MeitY Pie ----------
 st.subheader("MeitY Recognition Breakdown")
 meity_df = filtered[meity_col].value_counts().reset_index()
 fig_meity = px.pie(meity_df, names="index", values=meity_col, hole=0.4)
 st.plotly_chart(fig_meity, use_container_width=True)
 
-# ---------- MAP + CITY BAR ----------
+# ---------- Map + Cities ----------
 left, right = st.columns([3,2])
 
 with left:
@@ -149,36 +150,34 @@ with left:
             )
             fig_map.update_layout(mapbox_style="open-street-map")
             st.plotly_chart(fig_map, use_container_width=True)
-        else:
-            st.info("No map data")
 
 with right:
-    st.subheader("Top Cities")
+    st.subheader("Top Cities by Funding")
     city_sum = filtered.groupby(city_col)[amount_col].sum().sort_values(ascending=False).head(top_n).reset_index()
     fig_city = px.bar(city_sum, x=amount_col, y=city_col, orientation="h")
     st.plotly_chart(fig_city, use_container_width=True)
 
-# ---------- SECTOR TREEMAP ----------
-st.subheader("Sector Treemap")
+# ---------- Sector Treemap ----------
+st.subheader("Sector (Treemap)")
 sec_df = filtered.groupby(sector_col)[amount_col].sum().reset_index()
 fig_sec = px.treemap(sec_df, path=[sector_col], values=amount_col)
 st.plotly_chart(fig_sec, use_container_width=True)
 
-# ---------- TREND ----------
+# ---------- Funding Trend ----------
 st.subheader("Funding Trend")
 trend = filtered.groupby(pd.Grouper(key=date_col, freq="M"))[amount_col].sum().reset_index()
 fig_trend = px.line(trend, x=date_col, y=amount_col)
 st.plotly_chart(fig_trend, use_container_width=True)
 
-# ---------- INVESTORS ----------
-st.subheader("Top Investors")
+# ---------- Investors ----------
+st.subheader("Top Investors Explorer")
 if not filtered.empty:
-    invs = filtered[investor_col].str.split(",").explode()
+    invs = filtered[investor_col].astype(str).str.split(',').explode()
     inv_summary = invs.value_counts().head(top_n).reset_index()
     fig_inv = px.bar(inv_summary, x=investor_col, y="index", orientation="h")
     st.plotly_chart(fig_inv, use_container_width=True)
 
-# ---------- DATA ----------
+# ---------- Data & Download ----------
 st.subheader("Filtered Data")
-st.dataframe(filtered)
-st.download_button("Download CSV", filtered.to_csv(index=False), "filtered.csv")
+st.dataframe(filtered.reset_index(drop=True))
+st.download_button("Download filtered CSV", filtered.to_csv(index=False), "filtered_startups.csv")
